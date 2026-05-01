@@ -2018,3 +2018,18 @@ body.homepage {
     opacity: 1;
     transform: translateY(0);
 }
+
+/* Project cards: fixed thumbnail height */
+#features .row > article.special > a.image.featured {
+    display: block;
+    width: 100%;
+    height: 240px;
+    overflow: hidden;
+}
+
+#features .row > article.special > a.image.featured > img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
+}
