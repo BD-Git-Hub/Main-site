@@ -2094,83 +2094,40 @@ body.homepage.is-preload #header:after {
   transition: filter 1s; }
 
 /*-----------------------PARALLAX BACKGROUND---------------------------*/
-/*#parallax_background {
-
-    position: relative;
-    height: 28em;
-
-
-    top: 11em;
-
-
-    #pier {
-        z-index: 14;
-
-    }
-
-    #smallbirds {
-        z-index: 13;
-
-
-    }
-
-    #mediumbirds {
-        z-index: 12;
-    }
-
-    #bigbirds {
-        z-index: 11;
-
-    }
-
-    #darkerorange {
-        z-index: 10;
-
-    }
-
-    #orangesands {
-        z-index: 9;
-    }
-
-    #piergrinds {
-        z-index: 8;
-    }
-
-    #people {
-        z-index: 7;
-    }
-
-    #blueocean {
-        z-index: 6;
-    }
-
-    #purplebackgroundcloud {
-        z-index: 5;
-    }
-
-    #pinkbackgroundcloud {
-        z-index: 4;
-    }
-
-    #biggermoon {
-        z-index: 3;
-    }
-
-    #smallmoon {
-        z-index: 2;
-    }
-
-    #lightbluesky {
-        z-index: 1;
-    }
-
-
+#parallax_background {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1920 / 518;
+  background: #59c7d5;
+  overflow: hidden;
+  --px: 0px;
+  --py: 0px;
 }
 
 #parallax_background img {
-    position: absolute;
-    width: 100%;
-}*/
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: auto;
+  will-change: transform;
+  pointer-events: none;
+}
+
+#pier { z-index: 14; transform: translate3d(calc(var(--px) * 2), calc(var(--py) * 1), 0); }
+#smallbirds { z-index: 13; transform: translate3d(calc(var(--px) * 14), calc(var(--py) * 10), 0); }
+#mediumbirds { z-index: 12; transform: translate3d(calc(var(--px) * 18), calc(var(--py) * 12), 0); }
+#bigbirds { z-index: 11; transform: translate3d(calc(var(--px) * 22), calc(var(--py) * 14), 0); }
+#darkerorange { z-index: 10; transform: translate3d(calc(var(--px) * 6), calc(var(--py) * 4), 0); }
+#orangesands { z-index: 9; transform: translate3d(calc(var(--px) * 4), calc(var(--py) * 3), 0); }
+#piergrinds { z-index: 8; transform: translate3d(calc(var(--px) * 3), calc(var(--py) * 2), 0); }
+#people { z-index: 7; transform: translate3d(calc(var(--px) * 5), calc(var(--py) * 3), 0); }
+#blueocean { z-index: 6; transform: translate3d(calc(var(--px) * 0), calc(var(--py) * 0), 0); }
+#purplebackgroundcloud { z-index: 5; transform: translate3d(calc(var(--px) * 3), calc(var(--py) * 2), 0); }
+#pinkbackgroundcloud { z-index: 4; transform: translate3d(calc(var(--px) * 4), calc(var(--py) * 2), 0); }
+#biggermoon { z-index: 3; transform: translate3d(calc(var(--px) * 6), calc(var(--py) * 3), 0); }
+#smallmoon { z-index: 2; transform: translate3d(calc(var(--px) * 5), calc(var(--py) * 3), 0); }
+#lightbluesky { z-index: 1; transform: translate3d(calc(var(--px) * 1), calc(var(--py) * 1), 0); }
 .notHosted {
   color: red;
   font-style: oblique; }

@@ -344,57 +344,53 @@
 
 
     //-------------------PARALLAX BACKGROUND-----------------//
-    /*$(window).mousemove(function (e) {
-        var change;
-        var xpos = e.clientX;
-        var ypos = e.clientY;
-        var x = 200;
-        var left = change * 20;
-        var xpos = xpos * 2;
-        ypos = ypos * 2;
+    (function () {
+        var $parallax = $('#parallax_background');
+        if ($parallax.length === 0) return;
 
-        $('#pier').css('top', ((0 + (ypos / 0)) + "px"));
-        $('#pier').css('right', ((0 + (xpos / 800)) + "px"));
+        // Disable on touch/coarse pointers + respect reduced motion.
+        var finePointer = window.matchMedia && window.matchMedia('(pointer: fine)').matches;
+        var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (!finePointer || reduceMotion) return;
 
-        $('#smallbirds').css('top', ((0 + (ypos / 60)) + "px"));
-        $('#smallbirds').css('right', ((0 + (xpos / 110)) + "px"));
+        // Only update 2 CSS variables per frame for smoothness.
+        // CSS handles per-layer multipliers via calc().
+        $parallax.css({ '--px': '0px', '--py': '0px' });
 
-        $('#mediumbirds').css('top', ((0 + (ypos / 55)) + "px"));
-        $('#mediumbirds').css('right', ((0 + (xpos / 140)) + "px"));
+        var latestX = 0;
+        var latestY = 0;
+        var ticking = false;
 
-        $('#bigbirds').css('top', ((0 + (ypos / 70)) + "px"));
-        $('#bigbirds').css('right', ((0 + (xpos / 100)) + "px"));
+        function apply() {
+            ticking = false;
 
-        $('#darkerorange').css('top', ((0 + (ypos / 100)) + "px"));
-        $('#darkerorange').css('right', ((0 + (xpos / 000)) + "px"));
+            var w = window.innerWidth || 1;
+            var h = window.innerHeight || 1;
+            var dx = (latestX / w - 0.5) * 2; // -1..1
+            var dy = (latestY / h - 0.5) * 2; // -1..1
 
-        $('#orangesands').css('top', ((0 + (ypos / 200)) + "px"));
-        $('#orangesands').css('right', ((0 + (xpos / 000)) + "px"));
+            // Clamp so it never goes crazy if the browser reports weird values.
+            if (dx > 1) dx = 1;
+            if (dx < -1) dx = -1;
+            if (dy > 1) dy = 1;
+            if (dy < -1) dy = -1;
 
-        $('#piergrinds').css('top', ((0 + (ypos / 600)) + "px"));
-        $('#piergrinds').css('right', ((0 + (xpos / 500)) + "px"));
+            // Base movement in px (CSS multiplies this per layer).
+            var px = (dx * 1).toFixed(3) + 'px';
+            var py = (dy * 1).toFixed(3) + 'px';
+            $parallax.css({ '--px': px, '--py': py });
+        }
 
-        $('#people').css('top', ((0 + (ypos / 300)) + "px"));
-        $('#people').css('right', ((0 + (xpos / 400)) + "px"));
+        $window.on('mousemove', function (e) {
+            latestX = e.clientX;
+            latestY = e.clientY;
 
-        $('#blueocean').css('top', ((0 + (ypos / 00)) + "px"));
-        $('#blueocean').css('right', ((0 + (xpos / 00)) + "px"));
-
-        $('#purplebackgroundcloud').css('top', ((0 + (ypos / 400)) + "px"));
-        $('#purplebackgroundcloud').css('right', ((0 + (x / 200)) + "px"));
-
-        $('#pinkbackgroundcloud').css('top', ((8 + (ypos / 300)) + "px"));
-        $('#pinkbackgroundcloud').css('right', ((0 + (x / 200)) + "px"));
-
-        $('#biggermoon').css('top', ((0 + (ypos / 400)) + "px"));
-        $('#biggermoon').css('right', ((0 + (xpos / 700)) + "px"));
-
-        $('#smallmoon').css('top', ((0 + (ypos / 300)) + "px"));
-        $('#smallmoon').css('right', ((0 + (xpos / 700)) + "px"));
-
-        $('#lightbluesky').css('top', ((0 + (ypos / 200)) + "px"));
-        $('#lightbluesky').css('right', ((0 + (x / 200)) + "px"));
-    });*/
+            if (!ticking) {
+                ticking = true;
+                window.requestAnimationFrame(apply);
+            }
+        });
+    })();
 
 
 })(jQuery);
