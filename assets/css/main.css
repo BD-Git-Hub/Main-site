@@ -1406,6 +1406,8 @@ button,
     line-height: 1em; }
     #header h1 a {
       color: inherit; }
+  #header h2 {
+    color: inherit; }
   #header .button {
     display: inline-block;
     border-radius: 100%;
