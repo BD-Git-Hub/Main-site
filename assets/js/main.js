@@ -360,9 +360,28 @@
         var latestX = 0;
         var latestY = 0;
         var ticking = false;
+        var scrolling = false;
+        var scrollEndTimer;
+
+        function markScrolling() {
+            scrolling = true;
+            window.clearTimeout(scrollEndTimer);
+            scrollEndTimer = window.setTimeout(function () {
+                scrolling = false;
+            }, 150);
+        }
+
+        window.addEventListener('scroll', markScrolling, { passive: true });
+        window.addEventListener('wheel', markScrolling, { passive: true });
+        window.addEventListener('touchmove', markScrolling, { passive: true });
 
         function apply() {
             ticking = false;
+
+            // Avoid updating many layered transforms while the page is scrolling (main-thread contention).
+            if (scrolling) {
+                return;
+            }
 
             var w = window.innerWidth || 1;
             var h = window.innerHeight || 1;

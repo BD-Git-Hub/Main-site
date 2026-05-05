@@ -1869,6 +1869,9 @@ body.homepage {
     overflow: hidden;
     --px: 0px;
     --py: 0px;
+    contain: layout paint;
+    isolation: isolate;
+    transform: translateZ(0);
 }
 
 #parallax_background img {
@@ -1877,7 +1880,6 @@ body.homepage {
     left: 0;
     width: 100%;
     height: auto;
-    will-change: transform;
     pointer-events: none;
 }
 
