@@ -2149,6 +2149,10 @@ body.homepage.is-preload #header:after {
   color: red;
   font-style: oblique; }
 
+.keywordsLabel {
+  color: red;
+}
+
 #contactFormDiv {
   text-align: center;
   padding: 0px; }
@@ -2225,6 +2229,17 @@ body.homepage.is-preload #header:after {
   height: 100%;
   object-fit: cover;
   object-position: top center;
+}
+
+/* Make project descriptions same height so Keywords align */
+#features .row > article.special > p.projectDesc {
+  min-height: 14.8em;
+}
+
+@media screen and (max-width: 736px) {
+  #features .row > article.special > p.projectDesc {
+    min-height: 0;
+  }
 }
 
 /*# sourceMappingURL=main.css.map */
