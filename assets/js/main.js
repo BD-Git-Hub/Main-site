@@ -70,6 +70,14 @@
             reelWidth,
             timerId;
 
+        // Measure carousel geometry safely.
+        // (Needed for fade-in timing and scroll limits.)
+        $t._recalc = function () {
+            // outerWidth(true) includes margins, matching the actual spacing in the reel.
+            itemWidth = $items.first().outerWidth(true) || $items.first().outerWidth() || 1;
+            reelWidth = $reel[0] ? $reel[0].scrollWidth : 0;
+        };
+
         // Items.
         if (settings.carousels.fadeIn) {
 
@@ -82,7 +90,8 @@
                 enter: function () {
 
                     var timerId,
-                        limit = $items.length - Math.ceil($window.width() / itemWidth);
+                        iw = itemWidth || $items.first().outerWidth(true) || $items.first().outerWidth() || 1,
+                        limit = $items.length - Math.ceil($window.width() / iw);
 
                     timerId = window.setInterval(function () {
                         var x = $items.filter('.loading'),
@@ -162,7 +171,7 @@
         // Init.
         $window.on('load', function () {
 
-            reelWidth = $reel[0].scrollWidth;
+            $t._recalc();
 
             if (browser.mobile) {
 
@@ -186,7 +195,7 @@
             $t._update();
 
             $window.on('resize', function () {
-                reelWidth = $reel[0].scrollWidth;
+                $t._recalc();
                 $t._update();
             }).trigger('resize');
 
