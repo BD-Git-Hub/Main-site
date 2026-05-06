@@ -181,6 +181,12 @@ html {
     box-sizing: border-box;
 }
 
+// Prevent accidental horizontal page scroll (e.g. wide elements/carousel controls).
+html,
+body {
+    overflow-x: hidden;
+}
+
 *,
 *:before,
 *:after {
@@ -1208,6 +1214,26 @@ body.homepage {
     overflow: hidden;
     padding: 2em 0 2em 0;
     margin-bottom: 0;
+    min-height: 26em;
+
+    // When the carousel is in view, pin arrows to the window edges
+    // so horizontal scrolling can't move them off-screen.
+    &.is-inview {
+        .forward,
+        .backward {
+            position: fixed;
+            z-index: 9999;
+        }
+
+        // Peek from the edges (half off-screen), like the original template.
+        .forward {
+            right: -3em;
+        }
+
+        .backward {
+            left: -3em;
+        }
+    }
 
     .forward,
     .backward {
@@ -1257,11 +1283,11 @@ body.homepage {
         right: 0;
 
         &:before {
-            right: -3em;
+            right: 0;
         }
 
         &:after {
-            right: -0.25em;
+            right: calc(1.5em + 10px);
         }
     }
 
@@ -1269,11 +1295,11 @@ body.homepage {
         left: 0;
 
         &:before {
-            left: -3em;
+            left: 0;
         }
 
         &:after {
-            left: -0.25em;
+            left: calc(1.5em + 10px);
             @include vendor('transform',
             'scaleX(-1)');
         }

@@ -78,6 +78,22 @@
             reelWidth = $reel[0] ? $reel[0].scrollWidth : 0;
         };
 
+        // Keep arrows pinned to the window edges while this carousel is in view.
+        // This prevents arrows "scrolling away" if the page can be scrolled horizontally.
+        $t._setArrowsInView = function (inView) {
+            $t.toggleClass('is-inview', !!inView);
+            $t._updateArrowPos();
+        };
+
+        $t._updateArrowPos = function () {
+            if (!$t.hasClass('is-inview'))
+                return;
+
+            var top = ($t.offset().top - $window.scrollTop()) + ($t.outerHeight() / 2);
+            $forward.css('top', top + 'px');
+            $backward.css('top', top + 'px');
+        };
+
         // Items.
         if (settings.carousels.fadeIn) {
 
@@ -88,6 +104,7 @@
                 top: '-20vh',
                 bottom: '-20vh',
                 enter: function () {
+                    $t._setArrowsInView(true);
 
                     var timerId,
                         iw = itemWidth || $items.first().outerWidth(true) || $items.first().outerWidth() || 1,
@@ -109,6 +126,10 @@
 
                     }, settings.carousels.fadeDelay);
 
+                }
+                ,
+                leave: function () {
+                    $t._setArrowsInView(false);
                 }
             });
 
@@ -197,7 +218,12 @@
             $window.on('resize', function () {
                 $t._recalc();
                 $t._update();
+                $t._updateArrowPos();
             }).trigger('resize');
+
+            $window.on('scroll', function () {
+                $t._updateArrowPos();
+            });
 
         });
 

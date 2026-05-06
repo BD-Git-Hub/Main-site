@@ -149,6 +149,10 @@ textarea {
 html {
   box-sizing: border-box; }
 
+html,
+body {
+  overflow-x: hidden; }
+
 *,
 *:before,
 *:after {
@@ -1624,7 +1628,16 @@ body.homepage.is-preload #header:after {
   position: relative;
   overflow: hidden;
   padding: 2em 0 2em 0;
-  margin-bottom: 0; }
+  margin-bottom: 0;
+  min-height: 26em; }
+  .carousel.is-inview .forward,
+  .carousel.is-inview .backward {
+    position: fixed;
+    z-index: 9999; }
+  .carousel.is-inview .forward {
+    right: -3em; }
+  .carousel.is-inview .backward {
+    left: -3em; }
   .carousel .forward,
   .carousel .backward {
     position: absolute;
@@ -1665,15 +1678,15 @@ body.homepage.is-preload #header:after {
   .carousel .forward {
     right: 0; }
     .carousel .forward:before {
-      right: -3em; }
+      right: 0; }
     .carousel .forward:after {
-      right: -0.25em; }
+      right: calc(1.5em + 10px); }
   .carousel .backward {
     left: 0; }
     .carousel .backward:before {
-      left: -3em; }
+      left: 0; }
     .carousel .backward:after {
-      left: -0.25em;
+      left: calc(1.5em + 10px);
       -moz-transform: scaleX(-1);
       -webkit-transform: scaleX(-1);
       -ms-transform: scaleX(-1);
