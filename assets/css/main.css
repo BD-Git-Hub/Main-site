@@ -1380,10 +1380,7 @@ button,
 /* Header */
 #header {
   position: relative;
-  background-image: url("../../images/header.jpg");
-  background-size: cover;
-  background-position: center center;
-  background-attachment: fixed;
+  background: #59c7d5;
   color: #fff;
   text-align: center;
   padding: 7.5em 0 2em 0;
@@ -1398,7 +1395,8 @@ button,
     z-index: 1;
     margin: 0;
     display: inline-block;
-    vertical-align: middle; }
+    vertical-align: middle;
+    transform: none; }
   #header header {
     display: inline-block; }
     #header header > p {
@@ -1436,6 +1434,14 @@ body.homepage #header {
   min-height: 40em; }
   body.homepage #header h1 {
     font-size: 4em; }
+
+/* Homepage hero: place title block higher in the teal sky */
+body.homepage #header .inner {
+  position: absolute;
+  left: 50%;
+  top: 20%;
+  transform: translateX(-50%);
+}
   body.homepage #header:after {
     content: '';
     background: #1C0920;
@@ -1445,7 +1451,7 @@ body.homepage #header {
     top: 0;
     width: 100%;
     height: 100%;
-    opacity: 0;
+  opacity: 0;
     -moz-transition: opacity 2.5s ease-in-out;
     -webkit-transition: opacity 2.5s ease-in-out;
     -ms-transition: opacity 2.5s ease-in-out;
@@ -1455,7 +1461,25 @@ body.homepage #header {
     -ms-transition-delay: 0.5s;
     transition-delay: 0.5s; }
 body.homepage.is-preload #header:after {
-  opacity: 1; }
+  opacity: 0; }
+
+/* Hero parallax: make #parallax_background act as full-bleed background */
+#header #parallax_background {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: auto;
+  background: transparent;
+  overflow: hidden;
+  z-index: 0;
+}
+
+#header #parallax_background img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
 
 /* Nav */
 #nav {
@@ -2129,6 +2153,26 @@ body.homepage.is-preload #header:after {
   width: 100%;
   height: auto;
   pointer-events: none;
+}
+
+/* When used as hero background, it must fill the hero height */
+#header #parallax_background {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: auto;
+  width: 100%;
+  height: auto;
+  max-height: 100%;
+  /* Keep the original "scene" proportions so layers don't get cropped away */
+  aspect-ratio: 1920 / 518;
+  background: transparent;
+}
+
+#header #parallax_background img {
+  height: auto;
+  object-fit: initial;
 }
 
 #pier { z-index: 14; transform: translate3d(calc(var(--px) * 2), calc(var(--py) * 1), 0); }
