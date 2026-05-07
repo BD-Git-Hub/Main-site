@@ -233,7 +233,7 @@
 
     $("#startBtn").click(function () {
         $('html,body').animate({
-                scrollTop: $("#routineStrip").offset().top
+                scrollTop: $("#bioTitleHeader").offset().top
             },
             1500);
     });
