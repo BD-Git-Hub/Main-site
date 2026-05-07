@@ -1591,6 +1591,211 @@ body.homepage.is-preload #header:after {
     margin-bottom: 0;
     display: inline; }
 
+/* Daily routine timeline strip */
+.routine-strip {
+  background: #F0F4F4;
+  padding: 3.25em 0 3.25em 0;
+  margin-bottom: 0;
+}
+
+.routine-strip .container {
+  width: 100%;
+}
+
+.routine-strip__card {
+  background: #fff;
+  width: 100%;
+  max-width: none;
+  border-radius: 0;
+  padding: 2.25em 2em 1.5em 2em;
+  box-shadow: none;
+}
+
+.routine-strip__marker {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  margin: 0;
+  transform: translateY(45px);
+}
+
+.routine-strip__marker-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 70px;
+  height: 70px;
+  border-radius: 16px;
+  background: #6a4ad6;
+  color: #fff;
+  font-size: 1.7em;
+  line-height: 1;
+  border: 0;
+}
+
+.routine-strip__marker:after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -12px;
+  width: 0;
+  height: 0;
+  transform: translateX(-50%);
+  border-left: 11px solid transparent;
+  border-right: 11px solid transparent;
+  border-top: 11px solid #6a4ad6;
+}
+
+.routine-strip__scroller {
+  position: relative;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  padding: 0.75em 0 0.25em 0;
+  scrollbar-width: thin;
+}
+
+.routine-strip__track {
+  position: relative;
+  display: flex;
+  gap: 1.25em;
+  align-items: flex-start;
+  justify-content: space-between;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  min-width: 820px;
+  scroll-snap-type: x mandatory;
+  --routine-step-width: 132px;
+}
+
+.routine-strip__track:before {
+  content: '';
+  position: absolute;
+  /* Start/end exactly at the first/last dot (center of first/last step) */
+  left: calc(var(--routine-step-width) / 2);
+  right: calc(var(--routine-step-width) / 2);
+  top: 46px;
+  height: 8px;
+  border-radius: 999px;
+  /*
+    Time mapping (4:00 AM -> 10:00 PM) = 18h = 1080 minutes.
+    - Wake/early: 4:00 -> 6:00 (0% -> 11.11%)     orange
+    - Gym:        6:00 -> 8:00 (11.11% -> 22.22%)  pink
+    - Buffer:     8:00 -> 9:00 (22.22% -> 27.78%)  neutral
+    - Work:       9:00 -> 2:00 (27.78% -> 55.56%)  blue
+    - Lunch:      2:00 -> 2:30 (55.56% -> 58.33%)  green
+    - Work:       2:30 -> 5:00 (58.33% -> 72.22%)  blue
+    - Social:     5:00 -> 10:00 (72.22% -> 100%)   purple gradient
+  */
+  background: linear-gradient(90deg,
+    #f3aa2c 0%,
+    #f3aa2c 11.11%,
+    #ff5f93 11.11%,
+    #ff5f93 22.22%,
+    rgba(72, 57, 73, 0.18) 22.22%,
+    rgba(72, 57, 73, 0.18) 27.78%,
+    #33c7e7 27.78%,
+    #33c7e7 55.56%,
+    #37cc74 55.56%,
+    #37cc74 58.33%,
+    #33c7e7 58.33%,
+    #33c7e7 72.22%,
+    #9b8cff 72.22%,
+    #b15cff 100%
+  );
+  opacity: 0.85;
+}
+
+.routine-strip__step {
+  position: relative;
+  width: 132px;
+  flex: 0 0 auto;
+  text-align: center;
+  padding: 4.25em 0.25em 0 0.25em;
+  scroll-snap-align: center;
+}
+
+.routine-strip__dot {
+  position: absolute;
+  left: 50%;
+  top: 42px;
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  background: #fff;
+  border: 2px solid rgba(72, 57, 73, 0.25);
+  transform: translateX(-50%);
+  z-index: 1;
+}
+
+.routine-strip__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 54px;
+  height: 54px;
+  border-radius: 16px;
+  border: 0;
+  color: #fff;
+  background: #7c6f7c;
+  font-size: 1.35em;
+  line-height: 1;
+  margin-bottom: 0.65em;
+  box-shadow:
+    0 14px 26px rgba(0, 0, 0, 0.14),
+    0 2px 0 rgba(255, 255, 255, 0.25) inset;
+}
+
+.routine-strip__time {
+  display: block;
+  font-weight: 600;
+  color: rgba(72, 57, 73, 0.85);
+  letter-spacing: 0.02em;
+  font-size: 0.9em;
+  margin-top: 0.25em;
+}
+
+.routine-strip__label {
+  display: block;
+  margin-top: 0.15em;
+  font-size: 0.95em;
+  color: #5b5b5b;
+}
+
+/* Step tile colors (match the reference palette) */
+.routine-strip__step:nth-child(1) .routine-strip__icon { background: #f3aa2c; }
+.routine-strip__step:nth-child(2) .routine-strip__icon { background: #ff5f93; }
+.routine-strip__step:nth-child(3) .routine-strip__icon { background: #33c7e7; }
+.routine-strip__step:nth-child(4) .routine-strip__icon { background: #37cc74; }
+/* Social: light->dark purple gradient */
+.routine-strip__step:nth-child(5) .routine-strip__icon { background: linear-gradient(135deg, #9b8cff 0%, #b15cff 100%); }
+/* Sleep: swapped to solid purple */
+.routine-strip__step:nth-child(6) .routine-strip__icon { background: #b15cff; }
+
+@media screen and (max-width: 840px) {
+  .routine-strip {
+    padding: 2.75em 0 2.75em 0;
+  }
+  .routine-strip__card {
+    padding: 2em 1.25em 1.25em 1.25em;
+    border-radius: 0;
+  }
+  .routine-strip__track {
+    min-width: 760px;
+    padding: 0 1em 0 1em;
+  }
+}
+
+@media screen and (max-width: 736px) {
+  .routine-strip__track {
+    --routine-step-width: 128px;
+  }
+  .routine-strip__step {
+    width: 128px;
+  }
+}
+
 /* Content */
 #content > hr {
   top: 3em;
@@ -2081,6 +2286,40 @@ body.homepage.is-preload #header:after {
       display: none; }
     body.homepage #header h1 {
       font-size: 2.5em; }
+
+  /*
+    Mobile hero fix:
+    Desktop pins the title block with absolute positioning (top: 20%).
+    On mobile, #header becomes height:auto, so that absolute block can spill outside.
+    Put the hero text back into normal flow and scale the hero CTA down.
+  */
+  body.homepage #header .inner {
+    position: relative;
+    left: auto;
+    top: auto;
+    transform: none;
+    display: block;
+    width: 100%;
+    margin: 0 auto;
+    padding-top: 1.5em;
+  }
+
+  body.homepage #header h1 {
+    font-size: 2.15em;
+    line-height: 1.1em;
+  }
+
+  body.homepage #header h2 {
+    font-size: 1.1em;
+    line-height: 1.35em;
+  }
+
+  #header .button {
+    width: 3.4em;
+    height: 3.4em;
+    line-height: 3.4em;
+    font-size: 1.05em;
+  }
 
   /* Nav */
   #nav {
