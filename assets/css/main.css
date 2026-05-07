@@ -1463,6 +1463,11 @@ body.homepage #header .inner {
 body.homepage.is-preload #header:after {
   opacity: 0; }
 
+/* When the hero is off-screen, fully disable the heavy parallax layer stack */
+body.parallax-off #header #parallax_background {
+  display: none;
+}
+
 /* Hero parallax: make #parallax_background act as full-bleed background */
 #header #parallax_background {
   position: absolute;

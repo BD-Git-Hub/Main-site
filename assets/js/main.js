@@ -382,6 +382,8 @@
     (function () {
         var $parallax = $('#parallax_background');
         if ($parallax.length === 0) return;
+        var headerEl = document.getElementById('header');
+        if (!headerEl) return;
 
         // Disable on touch/coarse pointers + respect reduced motion.
         var finePointer = window.matchMedia && window.matchMedia('(pointer: fine)').matches;
@@ -397,6 +399,7 @@
         var ticking = false;
         var scrolling = false;
         var scrollEndTimer;
+        var active = true;
 
         function markScrolling() {
             scrolling = true;
@@ -435,7 +438,8 @@
             $parallax.css({ '--px': px, '--py': py });
         }
 
-        $window.on('mousemove', function (e) {
+        function onMouseMove(e) {
+            if (!active) return;
             latestX = e.clientX;
             latestY = e.clientY;
 
@@ -443,7 +447,28 @@
                 ticking = true;
                 window.requestAnimationFrame(apply);
             }
-        });
+        }
+
+        window.addEventListener('mousemove', onMouseMove, { passive: true });
+
+        // Pause the heavy layered scene when the hero is off-screen.
+        // This keeps scrolling smooth in the rest of the page.
+        if ('IntersectionObserver' in window) {
+            var io = new IntersectionObserver(function (entries) {
+                var entry = entries && entries[0];
+                var inView = !!(entry && entry.isIntersecting);
+
+                active = inView;
+                $body.toggleClass('parallax-off', !inView);
+
+                if (!inView) {
+                    // Reset movement so it doesn't "jump" when you return.
+                    $parallax.css({ '--px': '0px', '--py': '0px' });
+                }
+            }, { root: null, threshold: 0.01 });
+
+            io.observe(headerEl);
+        }
     })();
 
 
