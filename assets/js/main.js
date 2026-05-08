@@ -475,6 +475,8 @@
     (function () {
         var card = document.querySelector('.routine-strip__card');
         var marker = document.querySelector('.routine-strip__marker');
+        var markerBadge = document.querySelector('.routine-strip__marker-badge');
+        var markerBadgeIcon = markerBadge ? markerBadge.querySelector('i') : null;
         var scroller = document.querySelector('.routine-strip__scroller');
         var track = document.querySelector('.routine-strip__track');
         var firstDot = document.querySelector('.routine-strip__step:first-child .routine-strip__dot');
@@ -483,7 +485,7 @@
 
         var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         // Hardcode a time for testing (set to e.g. "12:04", or null to disable).
-        var HARD_CODED_UK_TIME = null;
+        var HARD_CODED_UK_TIME = "22:00";
 
         function parseStepMinutes(stepEl) {
             if (!stepEl) return null;
@@ -614,6 +616,64 @@
                     steps[currentIdx].classList.add('routine-strip__step--current');
                     steps[currentIdx].setAttribute('aria-current', 'true');
                 }
+            }
+
+            // Swap the small badge icon on the purple marker to match the current section.
+            // Position rules (per your request):
+            // - 4:00->6:00 (sun): top-right
+            // - gym/work/lunch/social: bottom-right
+            // - sleep (moon): top-right
+            if (markerBadge && markerBadgeIcon) {
+                // Badge uses the *bar segment* (important for the 14:30 -> 17:00 "back to work" blue segment).
+                var badgeKey = 'wake';
+                if (adj >= 22 * 60 || adj < 4 * 60) {
+                    badgeKey = 'sleep';
+                } else if (adj >= 17 * 60) {
+                    badgeKey = 'social';
+                } else if (adj >= (14 * 60 + 30)) {
+                    badgeKey = 'work'; // 14:30 -> 17:00 is blue/work
+                } else if (adj >= 14 * 60) {
+                    badgeKey = 'lunch'; // 14:00 -> 14:30 is green/lunch
+                } else if (adj >= 9 * 60) {
+                    badgeKey = 'work';
+                } else if (adj >= 6 * 60) {
+                    badgeKey = 'gym';
+                } else {
+                    badgeKey = 'wake';
+                }
+
+                var badgeIconByKey = {
+                    wake: 'fa-sun',
+                    gym: 'fa-dumbbell',
+                    work: 'fa-laptop-code',
+                    lunch: 'fa-utensils',
+                    social: 'fa-users',
+                    sleep: 'fa-moon'
+                };
+
+                var badgeColorByKey = {
+                    wake: '#f3d02c',
+                    gym: '#f3aa2c',
+                    work: '#33c7e7',
+                    lunch: '#37cc74',
+                    social: '#9b8cff',
+                    sleep: '#b15cff'
+                };
+
+                var badgePosClass = (badgeKey === 'wake' || badgeKey === 'sleep')
+                    ? 'routine-strip__marker-badge--top-right'
+                    : 'routine-strip__marker-badge--bottom-right';
+
+                markerBadge.classList.remove('routine-strip__marker-badge--top-right');
+                markerBadge.classList.remove('routine-strip__marker-badge--bottom-right');
+                markerBadge.classList.add(badgePosClass);
+
+                // Reset icon classes to the desired one.
+                markerBadgeIcon.className = 'fa-solid ' + badgeIconByKey[badgeKey];
+
+                // Solid badge color matching the timeline point.
+                markerBadge.style.setProperty('--badge-bg', badgeColorByKey[badgeKey]);
+                markerBadge.style.setProperty('--badge-border', 'rgba(255, 255, 255, 0.35)');
             }
 
             // Position the marker using the *real dot centers* (not a % of the track),
