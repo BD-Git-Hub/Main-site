@@ -1614,28 +1614,41 @@ body.parallax-off #header #parallax_background {
   border-radius: 0;
   padding: 2.25em 2em 1.5em 2em;
   box-shadow: none;
+  position: relative;
+  --routine-scroller-pad-top: 120px;
 }
 
 .routine-strip__marker {
-  position: relative;
-  display: flex;
-  justify-content: center;
+  position: absolute;
+  /*
+    Place the tile so its arrow points at the bar.
+    Bar center is at: scroller padding-top + 46px + 4px.
+    Tile+arrow height is about: 100px + 11px = 111px.
+    So: top ≈ padTop + 50px - 111px = padTop - 61px.
+  */
+  top: calc(var(--routine-scroller-pad-top) - 25px);
+  left: 0;
   margin: 0;
-  transform: translateY(45px);
+  transform: translateX(-50%);
+  pointer-events: none;
+  will-change: transform;
 }
 
 .routine-strip__marker-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 70px;
-  height: 70px;
+  width: 100px;
+  height: 100px;
   border-radius: 16px;
   background: #6a4ad6;
   color: #fff;
-  font-size: 1.7em;
+  font-size: 2.7em;
   line-height: 1;
   border: 0;
+  box-shadow:
+    0 14px 26px rgba(0, 0, 0, 0.14),
+    0 2px 0 rgba(255, 255, 255, 0.25) inset;
 }
 
 .routine-strip__marker:after {
@@ -1656,22 +1669,19 @@ body.parallax-off #header #parallax_background {
   overflow-x: auto;
   overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
-  padding: 0.75em 0 0.25em 0;
+  padding: var(--routine-scroller-pad-top) 0 0.25em 0;
   scrollbar-width: thin;
 }
 
 .routine-strip__track {
   position: relative;
-  display: flex;
-  gap: 1.25em;
-  align-items: flex-start;
-  justify-content: space-between;
+  display: block;
   list-style: none;
   padding: 0;
   margin: 0;
   min-width: 820px;
-  scroll-snap-type: x mandatory;
   --routine-step-width: 132px;
+  height: 260px;
 }
 
 .routine-strip__track:before {
@@ -1684,41 +1694,77 @@ body.parallax-off #header #parallax_background {
   height: 8px;
   border-radius: 999px;
   /*
-    Time mapping (4:00 AM -> 10:00 PM) = 18h = 1080 minutes.
-    - Wake/early: 4:00 -> 6:00 (0% -> 11.11%)     orange
-    - Gym:        6:00 -> 8:00 (11.11% -> 22.22%)  pink
-    - Buffer:     8:00 -> 9:00 (22.22% -> 27.78%)  neutral
-    - Work:       9:00 -> 2:00 (27.78% -> 55.56%)  blue
-    - Lunch:      2:00 -> 2:30 (55.56% -> 58.33%)  green
-    - Work:       2:30 -> 5:00 (58.33% -> 72.22%)  blue
-    - Social:     5:00 -> 10:00 (72.22% -> 100%)   purple gradient
+    Segment mapping is aligned to the *visual steps* (the dots are evenly spaced).
+    Each gap between dots is 20% of the bar:
+    - 4:00 -> 6:00 uses the whole first gap (0% -> 20%) yellow
+    - 6:00 -> 9:00 is the second gap (20% -> 40%), split as:
+      - 6:00 -> 8:00 (2/3 of the gap) orange (20% -> 33.33%)
+      - 8:00 -> 9:00 (1/3 of the gap) neutral (33.33% -> 40%)
+    - 9:00 -> 2:00 is the third gap (40% -> 60%) blue
+    - 2:00 -> 5:00 is the fourth gap (60% -> 80%), split as:
+      - 2:00 -> 2:30 (1/6 of the gap) green (60% -> 63.33%)
+      - 2:30 -> 5:00 blue (63.33% -> 80%)
+    - 5:00 -> 10:00 is the last gap (80% -> 100%) purple gradient
+  */
+  /*
+    Even hour spacing from 4:00 -> 22:00 (18 hours total).
+    Percent = (hourOffset / 18) * 100.
+    Key boundaries:
+    - 6:00   -> 11.111%
+    - 9:00   -> 27.778%
+    - 14:00  -> 55.556%
+    - 14:30  -> 58.333%
+    - 17:00  -> 72.222%
   */
   background: linear-gradient(90deg,
-    #f3aa2c 0%,
-    #f3aa2c 11.11%,
-    #ff5f93 11.11%,
-    #ff5f93 22.22%,
-    rgba(72, 57, 73, 0.18) 22.22%,
-    rgba(72, 57, 73, 0.18) 27.78%,
-    #33c7e7 27.78%,
-    #33c7e7 55.56%,
-    #37cc74 55.56%,
-    #37cc74 58.33%,
-    #33c7e7 58.33%,
-    #33c7e7 72.22%,
-    #9b8cff 72.22%,
+    /* 4:00 -> 6:00 (yellow) */
+    #f3d02c 0%,
+    #f3d02c 11.111%,
+    /* 6:00 -> 9:00 (orange) */
+    #f3aa2c 11.111%,
+    #f3aa2c 27.778%,
+    /* 9:00 -> 14:00 (blue) */
+    #33c7e7 27.778%,
+    #33c7e7 55.556%,
+    /* 14:00 -> 14:30 (green) */
+    #37cc74 55.556%,
+    #37cc74 58.333%,
+    /* 14:30 -> 17:00 (blue, same as Work) */
+    #33c7e7 58.333%,
+    #33c7e7 72.222%,
+    /* 17:00 -> 22:00 (light purple -> dark purple) */
+    #9b8cff 72.222%,
     #b15cff 100%
   );
   opacity: 0.85;
 }
 
 .routine-strip__step {
-  position: relative;
+  position: absolute;
   width: 132px;
   flex: 0 0 auto;
   text-align: center;
-  padding: 4.25em 0.25em 0 0.25em;
-  scroll-snap-align: center;
+  padding: 3.9em 0.25em 0 0.25em;
+  top: 0;
+  transform: translateX(-50%);
+}
+
+.routine-strip__step--current .routine-strip__dot {
+  border-color: #6a4ad6;
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(106, 74, 214, 0.18);
+}
+
+.routine-strip__step--current .routine-strip__time,
+.routine-strip__step--current .routine-strip__label {
+  color: rgba(72, 57, 73, 0.95);
+}
+
+.routine-strip__step--current .routine-strip__icon {
+  transform: translateY(-2px);
+  box-shadow:
+    0 18px 34px rgba(0, 0, 0, 0.16),
+    0 2px 0 rgba(255, 255, 255, 0.25) inset;
 }
 
 .routine-strip__dot {
@@ -1769,13 +1815,13 @@ body.parallax-off #header #parallax_background {
 }
 
 /* Step tile colors (match the reference palette) */
-.routine-strip__step:nth-child(1) .routine-strip__icon { background: #f3aa2c; }
-.routine-strip__step:nth-child(2) .routine-strip__icon { background: #ff5f93; }
+.routine-strip__step:nth-child(1) .routine-strip__icon { background: #f3d02c; }
+.routine-strip__step:nth-child(2) .routine-strip__icon { background: #f3aa2c; }
 .routine-strip__step:nth-child(3) .routine-strip__icon { background: #33c7e7; }
 .routine-strip__step:nth-child(4) .routine-strip__icon { background: #37cc74; }
-/* Social: light->dark purple gradient */
-.routine-strip__step:nth-child(5) .routine-strip__icon { background: linear-gradient(135deg, #9b8cff 0%, #b15cff 100%); }
-/* Sleep: swapped to solid purple */
+/* Social: light purple */
+.routine-strip__step:nth-child(5) .routine-strip__icon { background: #9b8cff; }
+/* Sleep: dark purple */
 .routine-strip__step:nth-child(6) .routine-strip__icon { background: #b15cff; }
 
 @media screen and (max-width: 840px) {

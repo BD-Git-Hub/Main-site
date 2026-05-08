@@ -471,5 +471,249 @@
         }
     })();
 
+    //-------------------UK TIME ROUTINE MARKER-----------------//
+    (function () {
+        var card = document.querySelector('.routine-strip__card');
+        var marker = document.querySelector('.routine-strip__marker');
+        var scroller = document.querySelector('.routine-strip__scroller');
+        var track = document.querySelector('.routine-strip__track');
+        var firstDot = document.querySelector('.routine-strip__step:first-child .routine-strip__dot');
+        var steps = Array.prototype.slice.call(document.querySelectorAll('.routine-strip__step'));
+        if (!card || !marker || !scroller || !track || !firstDot) return;
+
+        var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        // Hardcode a time for testing (set to e.g. "12:04", or null to disable).
+        var HARD_CODED_UK_TIME = null;
+
+        function parseStepMinutes(stepEl) {
+            if (!stepEl) return null;
+            var timeEl = stepEl.querySelector('.routine-strip__time');
+            if (!timeEl) return null;
+            var txt = (timeEl.textContent || '').trim(); // e.g. "6:00 AM"
+            var m = txt.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+            if (!m) return null;
+            var h = parseInt(m[1], 10);
+            var min = parseInt(m[2], 10);
+            var ap = String(m[3]).toUpperCase();
+            if (isNaN(h) || isNaN(min)) return null;
+            if (h === 12) h = 0;
+            if (ap === 'PM') h += 12;
+            return (h * 60) + min;
+        }
+
+        function layoutStepsEvenHours() {
+            if (!steps || !steps.length) return;
+            var trackRect = track.getBoundingClientRect();
+            var spanPx = trackRect.width;
+            if (!spanPx) return;
+
+            // Even-hour ruler from 04:00 -> 22:00 (18 hours).
+            var start = 4 * 60;
+            var end = 22 * 60;
+            var total = (end - start) || 1;
+
+            // Respect responsive step width.
+            var stepWidth = steps[0].getBoundingClientRect().width || 132;
+            var edge = stepWidth / 2;
+            var usable = Math.max(1, spanPx - stepWidth);
+
+            for (var i = 0; i < steps.length; i++) {
+                var mins = parseStepMinutes(steps[i]);
+                if (mins == null) continue;
+                var t = (mins - start) / total; // 0..1
+                t = clamp(t, 0, 1);
+                var leftPx = edge + usable * t;
+                steps[i].style.left = leftPx + 'px';
+            }
+        }
+
+        function getUkMinutesSinceMidnight() {
+            // 0) Hard-coded test mode (strongest override).
+            if (HARD_CODED_UK_TIME) {
+                var hard = String(HARD_CODED_UK_TIME).trim();
+                var hm0 = hard.match(/^(\d{1,2}):(\d{2})$/);
+                if (hm0) {
+                    var hh0 = parseInt(hm0[1], 10);
+                    var mm0 = parseInt(hm0[2], 10);
+                    if (!isNaN(hh0) && !isNaN(mm0) && hh0 >= 0 && hh0 <= 23 && mm0 >= 0 && mm0 <= 59) {
+                        return (hh0 * 60) + mm0;
+                    }
+                }
+            }
+
+            // Optional manual override for testing in DevTools:
+            // window.__routineUkTimeOverride = "23:50" (HH:MM, 24-hour)
+            if (typeof window !== 'undefined' && window.__routineUkTimeOverride) {
+                var raw = String(window.__routineUkTimeOverride).trim();
+                var m = raw.match(/^(\d{1,2}):(\d{2})$/);
+                if (m) {
+                    var oh = parseInt(m[1], 10);
+                    var om = parseInt(m[2], 10);
+                    if (!isNaN(oh) && !isNaN(om) && oh >= 0 && oh <= 23 && om >= 0 && om <= 59) {
+                        return (oh * 60) + om;
+                    }
+                }
+            }
+
+            // Use the visitor's clock, but read it in the UK time zone (Europe/London).
+            var parts = new Intl.DateTimeFormat('en-GB', {
+                timeZone: 'Europe/London',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            }).formatToParts(new Date());
+
+            var hh = 0, mm = 0;
+            for (var i = 0; i < parts.length; i++) {
+                if (parts[i].type === 'hour') hh = parseInt(parts[i].value, 10) || 0;
+                if (parts[i].type === 'minute') mm = parseInt(parts[i].value, 10) || 0;
+            }
+            return (hh * 60) + mm;
+        }
+
+        function clamp(n, a, b) {
+            return Math.max(a, Math.min(b, n));
+        }
+
+        function updateMarkerPosition(opts) {
+            opts = opts || {};
+
+            // Lay out the steps as an even-hour ruler before measuring dots.
+            layoutStepsEvenHours();
+
+            var ukMins = getUkMinutesSinceMidnight();
+
+            // Map time to the bar using your timeline "stops" (4:00, 6:00, 9:00, 14:00, 17:00, 22:00).
+            // Metaphor: it's a ruler with special tick marks; we slide between the nearest ticks.
+            var startMins = 4 * 60; // 4:00 AM
+            var adj = (ukMins < startMins) ? (ukMins + 1440) : ukMins; // after midnight -> continue past 22:00
+
+            var points = [
+                { mins: 4 * 60, pos: 0.0 },        // 4:00 AM
+                { mins: 6 * 60, pos: 2 / 18 },     // 6:00 AM
+                { mins: 9 * 60, pos: 5 / 18 },     // 9:00 AM
+                { mins: 14 * 60, pos: 10 / 18 },   // 2:00 PM
+                { mins: 17 * 60, pos: 13 / 18 },   // 5:00 PM
+                { mins: 22 * 60, pos: 1.0 },  // 10:00 PM
+                { mins: 28 * 60, pos: 1.0 }   // 4:00 AM next day (stay at end overnight)
+            ];
+
+            // Move the "current step" highlight (dot + tile) to match the time.
+            // We pick the latest tick that is <= the current time (e.g. 06:00 -> Gym).
+            var currentIdx = 0;
+            for (var ci = 0; ci < 6; ci++) {
+                if (adj >= points[ci].mins) currentIdx = ci;
+            }
+            if (steps && steps.length) {
+                for (var s = 0; s < steps.length; s++) {
+                    steps[s].classList.remove('routine-strip__step--current');
+                    steps[s].classList.remove('routine-strip__step--focus');
+                    steps[s].removeAttribute('aria-current');
+                }
+                if (steps[currentIdx]) {
+                    steps[currentIdx].classList.add('routine-strip__step--current');
+                    steps[currentIdx].setAttribute('aria-current', 'true');
+                }
+            }
+
+            // Position the marker using the *real dot centers* (not a % of the track),
+            // so at 6:00 AM it sits exactly above the 6:00 dot (and the Gym tile under it).
+            var trackRect = track.getBoundingClientRect();
+            var dots = track.querySelectorAll('.routine-strip__dot');
+            if (!dots || dots.length < 2) return;
+
+            var dotCenters = [];
+            for (var di = 0; di < dots.length; di++) {
+                var r = dots[di].getBoundingClientRect();
+                dotCenters.push(r.left + (r.width / 2));
+            }
+
+            // Times for the visible dots (the 6 steps).
+            var dotTimes = [
+                4 * 60,   // Wake
+                6 * 60,   // Gym
+                9 * 60,   // Work
+                14 * 60,  // Lunch
+                17 * 60,  // Social
+                22 * 60   // Sleep
+            ];
+
+            var x = dotCenters[0];
+            if (adj <= dotTimes[0]) {
+                x = dotCenters[0];
+            } else if (adj >= 28 * 60) {
+                x = dotCenters[dotCenters.length - 1];
+            } else if (adj >= dotTimes[dotTimes.length - 1]) {
+                // After 10pm, keep it pinned to the last dot.
+                x = dotCenters[dotCenters.length - 1];
+            } else {
+                for (var ti = 0; ti < dotTimes.length - 1; ti++) {
+                    var ta = dotTimes[ti];
+                    var tb = dotTimes[ti + 1];
+                    if (adj >= ta && adj <= tb) {
+                        var span2 = (tb - ta) || 1;
+                        var u2 = (adj - ta) / span2;
+                        x = dotCenters[ti] + (dotCenters[ti + 1] - dotCenters[ti]) * u2;
+                        break;
+                    }
+                }
+            }
+
+            // Position marker relative to the card, because marker is absolutely positioned inside the card.
+            var cardRect = card.getBoundingClientRect();
+            var leftPx = x - cardRect.left;
+            marker.style.left = leftPx + 'px';
+
+            // Keep the marker visible by scrolling the scroller (especially on mobile).
+            // Scroll target is relative to track inside scroller.
+            var xWithinTrack = x - trackRect.left;
+            var targetScrollLeft = xWithinTrack - (scroller.clientWidth / 2);
+            targetScrollLeft = clamp(targetScrollLeft, 0, (scroller.scrollWidth - scroller.clientWidth));
+
+            if (opts.scrollIntoView) {
+                scroller.scrollLeft = targetScrollLeft;
+            } else if (!reduceMotion) {
+                // Smooth scroll when allowed.
+                try {
+                    scroller.scrollTo({ left: targetScrollLeft, behavior: 'smooth' });
+                } catch (e) {
+                    scroller.scrollLeft = targetScrollLeft;
+                }
+            } else {
+                scroller.scrollLeft = targetScrollLeft;
+            }
+        }
+
+        // Initial placement.
+        updateMarkerPosition({ scrollIntoView: true });
+
+        // Expose a manual trigger for testing in DevTools:
+        // window.__updateRoutineMarker()
+        window.__updateRoutineMarker = function () {
+            updateMarkerPosition({ scrollIntoView: false });
+        };
+
+        // Update frequently, but only do work when needed.
+        // (This makes DevTools overrides feel instant, without heavy layout churn.)
+        var lastMinuteKey = null;
+        var lastOverrideKey = null;
+        window.setInterval(function () {
+            var now = new Date();
+            var minuteKey = now.getFullYear() + '-' + now.getMonth() + '-' + now.getDate() + '-' + now.getHours() + '-' + now.getMinutes();
+            var overrideKey = HARD_CODED_UK_TIME || (window.__routineUkTimeOverride ? String(window.__routineUkTimeOverride) : '');
+
+            if (minuteKey !== lastMinuteKey || overrideKey !== lastOverrideKey) {
+                lastMinuteKey = minuteKey;
+                lastOverrideKey = overrideKey;
+                updateMarkerPosition({ scrollIntoView: false });
+            }
+        }, 1000);
+
+        // Recalculate on resize because widths change.
+        window.addEventListener('resize', function () {
+            updateMarkerPosition({ scrollIntoView: false });
+        });
+    })();
+
 
 })(jQuery);
