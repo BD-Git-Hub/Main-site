@@ -280,7 +280,21 @@
     var x = true;
     $("#showDivBtn").click(function () {
         if (x) {
-            $('#hiddenDiv').show(1000);
+            // Start expand.
+            $('#hiddenDiv').show(1000, function () {
+                // After expand: slide to current time.
+                window.setTimeout(function () {
+                    if (window.__activateRoutineMarker)
+                        window.__activateRoutineMarker();
+                }, 50);
+            });
+
+            // As soon as the element becomes display:block (animation start),
+            // park the marker exactly at 4:00 AM so it appears correct immediately.
+            window.requestAnimationFrame(function () {
+                if (window.__parkRoutineMarkerAtStart)
+                    window.__parkRoutineMarkerAtStart();
+            });
             $('#hiddenDiv img').delay(1000).fadeTo(1000, 1, function () {});
         } else {
 
@@ -529,6 +543,22 @@
             }
         }
 
+        function parkStepsAtStart() {
+            if (!steps || !steps.length) return;
+            var trackRect = track.getBoundingClientRect();
+            var spanPx = trackRect.width;
+            if (!spanPx) return;
+
+            var stepWidth = steps[0].getBoundingClientRect().width || 132;
+            var edge = stepWidth / 2;
+            var startLeftPx = edge; // 04:00 is t=0 => left = edge
+
+            for (var i = 0; i < steps.length; i++) {
+                steps[i].classList.remove('routine-strip__step--slide');
+                steps[i].style.left = startLeftPx + 'px';
+            }
+        }
+
         function getUkMinutesSinceMidnight() {
             // 0) Hard-coded test mode (strongest override).
             if (HARD_CODED_UK_TIME) {
@@ -676,48 +706,26 @@
                 markerBadge.style.setProperty('--badge-border', 'rgba(255, 255, 255, 0.35)');
             }
 
-            // Position the marker using the *real dot centers* (not a % of the track),
-            // so at 6:00 AM it sits exactly above the 6:00 dot (and the Gym tile under it).
+            // Position the marker using the same "even-hour ruler" math as the tiles.
+            // This avoids a mid-animation mismatch while the step tiles are sliding.
             var trackRect = track.getBoundingClientRect();
-            var dots = track.querySelectorAll('.routine-strip__dot');
-            if (!dots || dots.length < 2) return;
+            var spanPx = trackRect.width || 1;
 
-            var dotCenters = [];
-            for (var di = 0; di < dots.length; di++) {
-                var r = dots[di].getBoundingClientRect();
-                dotCenters.push(r.left + (r.width / 2));
-            }
+            var startMins2 = 4 * 60;
+            var endMins2 = 22 * 60;
+            var clampedMins = adj;
+            if (clampedMins < startMins2) clampedMins = startMins2;
+            if (clampedMins > endMins2) clampedMins = endMins2;
 
-            // Times for the visible dots (the 6 steps).
-            var dotTimes = [
-                4 * 60,   // Wake
-                6 * 60,   // Gym
-                9 * 60,   // Work
-                14 * 60,  // Lunch
-                17 * 60,  // Social
-                22 * 60   // Sleep
-            ];
+            var totalMins2 = (endMins2 - startMins2) || 1;
+            var tt = (clampedMins - startMins2) / totalMins2; // 0..1
+            tt = clamp(tt, 0, 1);
 
-            var x = dotCenters[0];
-            if (adj <= dotTimes[0]) {
-                x = dotCenters[0];
-            } else if (adj >= 28 * 60) {
-                x = dotCenters[dotCenters.length - 1];
-            } else if (adj >= dotTimes[dotTimes.length - 1]) {
-                // After 10pm, keep it pinned to the last dot.
-                x = dotCenters[dotCenters.length - 1];
-            } else {
-                for (var ti = 0; ti < dotTimes.length - 1; ti++) {
-                    var ta = dotTimes[ti];
-                    var tb = dotTimes[ti + 1];
-                    if (adj >= ta && adj <= tb) {
-                        var span2 = (tb - ta) || 1;
-                        var u2 = (adj - ta) / span2;
-                        x = dotCenters[ti] + (dotCenters[ti + 1] - dotCenters[ti]) * u2;
-                        break;
-                    }
-                }
-            }
+            var stepWidth2 = (steps && steps[0]) ? (steps[0].getBoundingClientRect().width || 132) : 132;
+            var edge2 = stepWidth2 / 2;
+            var usable2 = Math.max(1, spanPx - stepWidth2);
+            var leftWithinTrack = edge2 + usable2 * tt;
+            var x = trackRect.left + leftWithinTrack;
 
             // Position marker relative to the card, because marker is absolutely positioned inside the card.
             var cardRect = card.getBoundingClientRect();
@@ -745,7 +753,18 @@
         }
 
         // Initial placement.
-        updateMarkerPosition({ scrollIntoView: true });
+        var routineActive = true;
+        var hiddenDiv = document.getElementById('hiddenDiv');
+        if (hiddenDiv && window.getComputedStyle(hiddenDiv).display === 'none') {
+            // Routine strip is hidden initially; don't measure/layout yet (would be wrong).
+            routineActive = false;
+            // Avoid showing the marker in the wrong place while collapsed.
+            marker.style.visibility = 'hidden';
+            // Also avoid showing step tiles/dots in the wrong place while collapsed.
+            scroller.style.visibility = 'hidden';
+        } else {
+            updateMarkerPosition({ scrollIntoView: true });
+        }
 
         // Expose a manual trigger for testing in DevTools:
         // window.__updateRoutineMarker()
@@ -753,11 +772,36 @@
             updateMarkerPosition({ scrollIntoView: false });
         };
 
+        // Called after the hidden section expands (see Show More click handler).
+        window.__activateRoutineMarker = function () {
+            routineActive = true;
+            marker.classList.add('routine-strip__marker--slide');
+            if (steps && steps.length) {
+                for (var i = 0; i < steps.length; i++) {
+                    steps[i].classList.add('routine-strip__step--slide');
+                }
+            }
+            updateMarkerPosition({ scrollIntoView: false });
+        };
+
+        // Park marker at the 4:00 AM dot (no slide), used right after expand completes.
+        window.__parkRoutineMarkerAtStart = function () {
+            marker.classList.remove('routine-strip__marker--slide');
+            marker.style.visibility = 'visible';
+            scroller.style.visibility = 'visible';
+            parkStepsAtStart();
+            var prev = HARD_CODED_UK_TIME;
+            HARD_CODED_UK_TIME = "04:00";
+            updateMarkerPosition({ scrollIntoView: true });
+            HARD_CODED_UK_TIME = prev;
+        };
+
         // Update frequently, but only do work when needed.
         // (This makes DevTools overrides feel instant, without heavy layout churn.)
         var lastMinuteKey = null;
         var lastOverrideKey = null;
         window.setInterval(function () {
+            if (!routineActive) return;
             var now = new Date();
             var minuteKey = now.getFullYear() + '-' + now.getMonth() + '-' + now.getDate() + '-' + now.getHours() + '-' + now.getMinutes();
             var overrideKey = HARD_CODED_UK_TIME || (window.__routineUkTimeOverride ? String(window.__routineUkTimeOverride) : '');

@@ -1599,7 +1599,7 @@ body.parallax-off #header #parallax_background {
 /* Daily routine timeline strip */
 .routine-strip {
   background: #F0F4F4;
-  padding: 3.25em 0 3.25em 0;
+  padding: 0;
   margin-bottom: 0;
 }
 
@@ -1632,6 +1632,10 @@ body.parallax-off #header #parallax_background {
   transform: translateX(-50%);
   pointer-events: none;
   will-change: transform;
+}
+
+.routine-strip__marker.routine-strip__marker--slide {
+  transition: left 700ms ease;
 }
 
 .routine-strip__marker-icon {
@@ -1778,6 +1782,10 @@ body.parallax-off #header #parallax_background {
   transform: translateX(-50%);
 }
 
+.routine-strip__step.routine-strip__step--slide {
+  transition: left 700ms ease;
+}
+
 .routine-strip__step--current .routine-strip__dot {
   border-color: #6a4ad6;
   background: #fff;
@@ -1855,7 +1863,7 @@ body.parallax-off #header #parallax_background {
 
 @media screen and (max-width: 840px) {
   .routine-strip {
-    padding: 2.75em 0 2.75em 0;
+    padding: 0;
   }
   .routine-strip__card {
     padding: 2em 1.25em 1.25em 1.25em;
