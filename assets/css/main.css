@@ -1680,7 +1680,7 @@ body.parallax-off #header #parallax_background {
     Tile+arrow height is about: 100px + 11px = 111px.
     So: top ≈ padTop + 50px - 111px = padTop - 61px.
   */
-  top: calc(var(--routine-scroller-pad-top) - 50px);
+  top: calc(var(--routine-scroller-pad-top) - 86px);
   left: 0;
   margin: 0;
   transform: translateX(-50%);
@@ -1926,6 +1926,15 @@ body.parallax-off #header #parallax_background {
   .routine-strip__track {
     min-width: 760px;
     padding: 0 1em 0 1em;
+  }
+  /*
+    On smaller screens, sit the marker above the progress bar with ~5px gap.
+    Bar top = scroller padding-top + 46px.
+    Marker box (120px) + arrow (11px) + 5px gap = 136px below the bar's top
+    means the marker's top must be: padTop + 46px - 136px = padTop - 90px.
+  */
+  .routine-strip__marker {
+    top: calc(var(--routine-scroller-pad-top) - 90px);
   }
 }
 

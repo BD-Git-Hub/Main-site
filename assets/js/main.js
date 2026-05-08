@@ -487,7 +487,6 @@
 
     //-------------------UK TIME ROUTINE MARKER-----------------//
     (function () {
-        var card = document.querySelector('.routine-strip__card');
         var marker = document.querySelector('.routine-strip__marker');
         var markerBadge = document.querySelector('.routine-strip__marker-badge');
         var markerBadgeIcon = markerBadge ? markerBadge.querySelector('i') : null;
@@ -495,7 +494,7 @@
         var track = document.querySelector('.routine-strip__track');
         var firstDot = document.querySelector('.routine-strip__step:first-child .routine-strip__dot');
         var steps = Array.prototype.slice.call(document.querySelectorAll('.routine-strip__step'));
-        if (!card || !marker || !scroller || !track || !firstDot) return;
+        if (!marker || !scroller || !track || !firstDot) return;
 
         var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         // Hardcode a time for testing (set to e.g. "12:04", or null to disable).
@@ -725,16 +724,13 @@
             var edge2 = stepWidth2 / 2;
             var usable2 = Math.max(1, spanPx - stepWidth2);
             var leftWithinTrack = edge2 + usable2 * tt;
-            var x = trackRect.left + leftWithinTrack;
-
-            // Position marker relative to the card, because marker is absolutely positioned inside the card.
-            var cardRect = card.getBoundingClientRect();
-            var leftPx = x - cardRect.left;
+            // Position marker inside the scroller so it scrolls with the timeline.
+            var leftPx = track.offsetLeft + leftWithinTrack;
             marker.style.left = leftPx + 'px';
 
             // Keep the marker visible by scrolling the scroller (especially on mobile).
             // Scroll target is relative to track inside scroller.
-            var xWithinTrack = x - trackRect.left;
+            var xWithinTrack = leftWithinTrack;
             var targetScrollLeft = xWithinTrack - (scroller.clientWidth / 2);
             targetScrollLeft = clamp(targetScrollLeft, 0, (scroller.scrollWidth - scroller.clientWidth));
 
