@@ -485,7 +485,7 @@
 
         var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         // Hardcode a time for testing (set to e.g. "12:04", or null to disable).
-        var HARD_CODED_UK_TIME = "22:00";
+        var HARD_CODED_UK_TIME = null;
 
         function parseStepMinutes(stepEl) {
             if (!stepEl) return null;
