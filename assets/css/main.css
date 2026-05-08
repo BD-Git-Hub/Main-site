@@ -1627,7 +1627,7 @@ body.parallax-off #header #parallax_background {
 #hiddenDiv {
   background: #F0F4F4;
   margin: 0 0 2em 0;
-  padding: 6em 0 6em 0;
+  padding: 1.5em 0 1.5em 0;
 }
 
 #hiddenDiv .routine-strip {
@@ -1664,7 +1664,7 @@ body.parallax-off #header #parallax_background {
 
 @media screen and (max-width: 840px) {
   #hiddenDiv {
-    padding: 4em 0 4em 0;
+    padding: 1.5em 0 1.5em 0;
   }
   #hiddenDiv .routine-strip__card {
     border-radius: 1em;
