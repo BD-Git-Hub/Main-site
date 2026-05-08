@@ -1699,7 +1699,7 @@ body.parallax-off #header #parallax_background {
   width: 120px;
   height: 120px;
   border-radius: 16px;
-  background: #6a4ad6;
+  background: #df7366;
   color: #fff;
   font-size: 2.7em;
   line-height: 1;
@@ -1748,7 +1748,7 @@ body.parallax-off #header #parallax_background {
   transform: translateX(-50%);
   border-left: 11px solid transparent;
   border-right: 11px solid transparent;
-  border-top: 11px solid #6a4ad6;
+  border-top: 11px solid #df7366;
 }
 
 .routine-strip__scroller {
@@ -1841,9 +1841,9 @@ body.parallax-off #header #parallax_background {
 }
 
 .routine-strip__step--current .routine-strip__dot {
-  border-color: #6a4ad6;
+  border-color: #df7366;
   background: #fff;
-  box-shadow: 0 0 0 4px rgba(106, 74, 214, 0.18);
+  box-shadow: 0 0 0 4px rgba(223, 115, 102, 0.22);
 }
 
 .routine-strip__step--current .routine-strip__time,
