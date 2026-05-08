@@ -1596,6 +1596,11 @@ body.parallax-off #header #parallax_background {
     margin-bottom: 0;
     display: inline; }
 
+/* Slightly reduce the gap between the BIO title banner and BIO section */
+#bioTitleBanner {
+  padding-bottom: 2.25em;
+}
+
 /* Daily routine timeline strip */
 .routine-strip {
   background: #F0F4F4;
