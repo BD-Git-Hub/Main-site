@@ -2010,7 +2010,7 @@ body.homepage {
     transform: translateY(0);
 }
 
-/* Project cards: fixed thumbnail height */
+/* Project cards: fixed thumbnail height + hover zoom (image scales inside clipped link) */
 #features .row > article.special > a.image.featured {
     display: block;
     width: 100%;
@@ -2023,4 +2023,27 @@ body.homepage {
     height: 100%;
     object-fit: cover;
     object-position: top center;
+    transition: transform 0.35s ease, opacity 1s ease-out;
+}
+
+#features .row > article.special > a.image.featured:hover > img {
+    transform: translateY(0) scale(1.07);
+}
+
+#features .row > article.special > a.image.featured:hover > img:not(.fade-in) {
+    transform: translateY(50px) scale(1.07);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #features .row > article.special > a.image.featured > img {
+        transition: opacity 1s ease-out;
+    }
+
+    #features .row > article.special > a.image.featured:hover > img {
+        transform: translateY(0);
+    }
+
+    #features .row > article.special > a.image.featured:hover > img:not(.fade-in) {
+        transform: translateY(50px);
+    }
 }
