@@ -1851,6 +1851,78 @@ body.homepage {
 
 }
 
+/* Up to 768px — carousel heights */
+@media screen and (max-width: 768px) {
+
+    .carousel {
+        &.is-inview {
+            min-height: 0;
+            height: 314px;
+        }
+
+        .reel {
+            height: 304px;
+            padding: 0 0.5em 0.5em 0.5em;
+        }
+    }
+
+}
+
+/* 737px–768px — overrides general <=768px carousel heights */
+@media screen and (min-width: 737px) and (max-width: 768px) {
+
+    .carousel {
+        &.is-inview {
+            min-height: 0;
+            height: 437px;
+        }
+
+        .reel {
+            height: 415px;
+            padding: 0 0.5em 0.5em 0.5em;
+        }
+    }
+
+}
+
+/* Viewports up to 425px — overrides 768px rule above */
+@media screen and (max-width: 425px) {
+
+    .carousel {
+        &.is-inview {
+            min-height: 0;
+            height: 314px;
+        }
+
+        .reel {
+            height: 306px;
+        }
+    }
+
+}
+
+/* 1024px and up — desktop .reel height */
+@media screen and (min-width: 1024px) {
+
+    .carousel {
+        .reel {
+            height: 368px;
+        }
+    }
+
+}
+
+/* 1281px and up — wider desktop .reel height */
+@media screen and (min-width: 1281px) {
+
+    .carousel {
+        .reel {
+            height: 430px;
+        }
+    }
+
+}
+
 //-----------------------------bovin's SASS---------------------------//
 #bullpointLiID {
     list-style-type: none;
