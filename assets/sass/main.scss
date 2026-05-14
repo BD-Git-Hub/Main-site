@@ -2039,8 +2039,16 @@ body.homepage {
 #lightbluesky { z-index: 1; transform: translate3d(calc(var(--px) * 1), calc(var(--py) * 1), 0); }
 
 .notHosted {
-    color: red;
-    font-style: oblique;
+    display: inline-block;
+    margin: 0.65em 0 0 0;
+    padding: 0.4em 0.95em;
+    background: #c62828;
+    color: #fff;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 0.88em;
+    border-radius: 0.3em;
+    line-height: 1.3;
 }
 
 #contactFormDiv {
