@@ -73,31 +73,34 @@
 
         </div>
 
-        <!-- title bio -->
+        <!-- title bio (same pattern as Skills: .banner) -->
         <section class="banner" id="bioTitleBanner">
             <header id="bioTitleHeader">
-                <h2>Welcome to My Portfolio</h2>
+                <h2 id="bioWelcomeHeading">Welcome to My Portfolio</h2>
                 <p>
                     Explore my skills in web development, 3D production and everything in between.
                 </p>
             </header>
         </section>
 
-        <!-- Bio -->
-        <div class="wrapper style2">
-
-            <article id="main" class="container special">
+        <!-- Bio body (same pattern as Projects: .wrapper.style1 + .container.special + .row) -->
+        <div class="wrapper style1" id="bioWrapper">
+            <section id="bioFeatures" class="container special" aria-labelledby="bioHeading">
                 <header>
-                    <h2>BIO</h2>
-                    <p>Raised in the seaside town of Eastbourne, England, Bovin De Souza is a creative and technically skilled web developer with a strong eye for design, efficiency, and innovation. Known for his productivity and forward-thinking approach, he combines technical expertise with a refined sense of creativity and problem-solving.</p>
-                    <p>A graduate of the University of Brighton with a degree in Computer Science specializing in Digital Games Production, he brings a diverse skill set spanning both web development and 3D production.</p>
-                    <p>Outside of work, he spends his time building technical projects, reading about personal development, socializing, and pushing new PRs at the gym.</p>
+                    <h2 id="bioHeading">BIO</h2>
+                    <p>Background, education, and interests beyond the desk.</p>
                 </header>
-
-                <footer>
-                    <a class="button" id="showDivBtn">Show More</a>
-                </footer>
-            </article>
+                <div class="row">
+                    <article id="main" class="col-12 col-12-mobile special">
+                        <p>Raised in the seaside town of Eastbourne, England, Bovin De Souza is a creative and technically skilled web developer with a strong eye for design, efficiency, and innovation. Known for his productivity and forward-thinking approach, he combines technical expertise with a refined sense of creativity and problem-solving.</p>
+                        <p>A graduate of the University of Brighton with a degree in Computer Science specializing in Digital Games Production, he brings a diverse skill set spanning both web development and 3D production.</p>
+                        <p>Outside of work, he spends his time building technical projects, reading about personal development, socializing, and pushing new PRs at the gym.</p>
+                        <footer>
+                            <a class="button" id="showDivBtn">Show More</a>
+                        </footer>
+                    </article>
+                </div>
+            </section>
         </div>
 
         <!--HIDDENDIV-->

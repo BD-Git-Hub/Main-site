@@ -1596,10 +1596,34 @@ body.parallax-off #header #parallax_background {
     margin-bottom: 0;
     display: inline; }
 
-/* Slightly reduce the gap between the BIO title banner and BIO section */
-#bioTitleBanner {
-  padding-bottom: 2.25em;
-}
+/* Bio — match Skills (banner) + Projects (#features) layout */
+#bioWrapper {
+  background: #f4f5f6; }
+
+#bioFeatures > header > p {
+  color: #6f6a6f;
+  font-weight: 300; }
+
+#bioWrapper #main {
+  width: 100%;
+  max-width: 52em;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 2.5em 2.5em 2em;
+  background: #fff;
+  border: 1px solid rgba(72, 57, 73, 0.08);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04); }
+  #bioWrapper #main > p {
+    text-align: center;
+    color: #5b5b5b;
+    line-height: 1.85;
+    margin: 0 0 1.15em 0; }
+  #bioWrapper #main > footer {
+    margin-top: 2em; }
+
+@media screen and (max-width: 736px) {
+  #bioWrapper #main {
+    padding: 2em 1.35em 1.75em; } }
 
 /* Daily routine timeline strip */
 .routine-strip {
