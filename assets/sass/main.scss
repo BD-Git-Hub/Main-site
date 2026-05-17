@@ -939,8 +939,42 @@ body.homepage {
         height: 100vh;
         min-height: 40em;
 
+        .inner {
+            position: absolute;
+            left: 50%;
+            top: 17%;
+            transform: translateX(-50%);
+        }
+
         h1 {
-            font-size: 4em;
+            font-size: 3.5em;
+        }
+
+        h2 {
+            font-size: 1.35em;
+            line-height: 1.35;
+        }
+
+        hr {
+            top: 1.15em;
+            margin-bottom: 2em;
+        }
+
+        .inner > .heroIntro {
+            font-size: 1.05em;
+            margin: 0.45em auto 0;
+            line-height: 1.45;
+        }
+
+        footer {
+            margin-top: 0.75em;
+        }
+
+        .button {
+            width: 4em;
+            height: 4em;
+            line-height: 4em;
+            font-size: 1.15em;
         }
 
         &:after {
@@ -1322,7 +1356,6 @@ body.homepage {
     overflow: hidden;
     padding: 2em 0 2em 0;
     margin-bottom: 0;
-    min-height: 26em;
 
     // When the carousel is in view, pin arrows to the window edges
     // so horizontal scrolling can't move them off-screen.
@@ -1419,7 +1452,6 @@ body.homepage {
         position: relative;
         -webkit-overflow-scrolling: touch;
         padding: 0 2em 0 2em;
-        height: clamp(16rem, 30vw, 24rem);
     }
 
     article {
@@ -1569,11 +1601,6 @@ body.homepage {
 }
 
 /* Mobile */
-
-#navPanel,
-#titleBar {
-    display: none;
-}
 
 @include breakpoint('<=mobile') {
 
@@ -1908,22 +1935,88 @@ body.homepage {
     body.homepage {
         #header {
             min-height: 0;
-            padding: 5.5em 0 5em 0;
+            padding: 4em 0 4.5em 0;
             height: auto;
 
             &:before {
                 display: none;
             }
 
+            .inner {
+                padding-top: 0.85em;
+            }
+
             h1 {
-                font-size: 2.5em;
+                font-size: 2.15em;
+                line-height: 1.1;
+            }
+
+            h2 {
+                font-size: 1.1em;
+                line-height: 1.35;
+            }
+
+            hr {
+                top: 1em;
+                margin-bottom: 2em;
+            }
+
+            .inner > .heroIntro {
+                font-size: 1em;
+                margin: 0.4em auto 0;
+                line-height: 1.45;
+            }
+
+            footer {
+                margin-top: 0.65em;
+            }
+
+            .button {
+                width: 3.4em;
+                height: 3.4em;
+                line-height: 3.4em;
+                font-size: 1.05em;
             }
         }
     }
 
-    /* Nav */
+    /* Nav — keep header links visible; hide slide-down menu button */
+    #navButton,
+    #navPanel {
+        display: none !important;
+    }
+
     #nav {
-        display: none;
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        padding: 0.65em 0.5em;
+        z-index: 2;
+        overflow: visible;
+
+        > ul {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            height: auto;
+            line-height: normal;
+            border: 0;
+            max-width: 100%;
+
+            &:before,
+            &:after {
+                display: none;
+            }
+
+            > li {
+                margin: 0.2em 0.15em;
+                padding: 0.45em 0.55em;
+                font-size: 0.78em;
+            }
+        }
     }
 
     /* Banner */
@@ -1972,76 +2065,33 @@ body.homepage {
 
 }
 
-/* Up to 768px — carousel heights */
+/* Carousel heights by viewport (max-width, largest first) */
+@media screen and (max-width: 1440px) {
+    .carousel.is-inview,
+    .carousel .reel {
+        height: 363px;
+    }
+}
+
+@media screen and (max-width: 1024px) {
+    .carousel.is-inview,
+    .carousel .reel {
+        height: 314px;
+    }
+}
+
 @media screen and (max-width: 768px) {
-
-    .carousel {
-        &.is-inview {
-            min-height: 0;
-            height: 314px;
-        }
-
-        .reel {
-            height: 304px;
-            padding: 0 0.5em 0.5em 0.5em;
-        }
+    .carousel.is-inview,
+    .carousel .reel {
+        height: 330px;
     }
-
 }
 
-/* 737px–768px — overrides general <=768px carousel heights */
-@media screen and (min-width: 737px) and (max-width: 768px) {
-
-    .carousel {
-        &.is-inview {
-            min-height: 0;
-            height: 437px;
-        }
-
-        .reel {
-            height: 415px;
-            padding: 0 0.5em 0.5em 0.5em;
-        }
-    }
-
-}
-
-/* Viewports up to 425px — overrides 768px rule above */
 @media screen and (max-width: 425px) {
-
-    .carousel {
-        &.is-inview {
-            min-height: 0;
-            height: 314px;
-        }
-
-        .reel {
-            height: 306px;
-        }
+    .carousel.is-inview,
+    .carousel .reel {
+        height: 314px;
     }
-
-}
-
-/* 1024px and up — desktop .reel height */
-@media screen and (min-width: 1024px) {
-
-    .carousel {
-        .reel {
-            height: 368px;
-        }
-    }
-
-}
-
-/* 1281px and up — wider desktop .reel height */
-@media screen and (min-width: 1281px) {
-
-    .carousel {
-        .reel {
-            height: 430px;
-        }
-    }
-
 }
 
 //-----------------------------bovin's SASS---------------------------//
@@ -2108,13 +2158,43 @@ body.homepage {
 #smallbirds { z-index: 13; transform: translate3d(calc(var(--px) * 14), calc(var(--py) * 10), 0); }
 #mediumbirds { z-index: 12; transform: translate3d(calc(var(--px) * 18), calc(var(--py) * 12), 0); }
 #bigbirds { z-index: 11; transform: translate3d(calc(var(--px) * 22), calc(var(--py) * 14), 0); }
-#darkerorange { z-index: 10; transform: translate3d(calc(var(--px) * 6), calc(var(--py) * 4), 0); }
-#orangesands { z-index: 9; transform: translate3d(calc(var(--px) * 4), calc(var(--py) * 3), 0); }
+#darkerorange {
+    z-index: 10;
+    width: 110%;
+    left: -5px;
+    transform: translate3d(calc(var(--px) * 6), calc(var(--py) * 4), 0);
+}
+
+#orangesands {
+    z-index: 9;
+    width: 110%;
+    left: -5px;
+    transform: translate3d(calc(var(--px) * 4), calc(var(--py) * 3), 0);
+}
+
 #piergrinds { z-index: 8; transform: translate3d(calc(var(--px) * 3), calc(var(--py) * 2), 0); }
-#people { z-index: 7; transform: translate3d(calc(var(--px) * 5), calc(var(--py) * 3), 0); }
+
+#people {
+    z-index: 7;
+    width: 105%;
+    top: 21px;
+    transform: translate3d(calc(var(--px) * 5), calc(var(--py) * 3), 0);
+}
+
 #blueocean { z-index: 6; transform: translate3d(calc(var(--px) * 0), calc(var(--py) * 0), 0); }
-#purplebackgroundcloud { z-index: 5; transform: translate3d(calc(var(--px) * 3), calc(var(--py) * 2), 0); }
-#pinkbackgroundcloud { z-index: 4; transform: translate3d(calc(var(--px) * 4), calc(var(--py) * 2), 0); }
+
+#purplebackgroundcloud {
+    z-index: 5;
+    left: -5px;
+    transform: translate3d(calc(var(--px) * 3), calc(var(--py) * 2), 0);
+}
+
+#pinkbackgroundcloud {
+    z-index: 4;
+    left: 6px;
+    top: 4px;
+    transform: translate3d(calc(var(--px) * 4), calc(var(--py) * 2), 0);
+}
 #biggermoon { z-index: 3; transform: translate3d(calc(var(--px) * 6), calc(var(--py) * 3), 0); }
 #smallmoon { z-index: 2; transform: translate3d(calc(var(--px) * 5), calc(var(--py) * 3), 0); }
 #lightbluesky { z-index: 1; transform: translate3d(calc(var(--px) * 1), calc(var(--py) * 1), 0); }

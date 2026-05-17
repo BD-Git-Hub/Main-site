@@ -46,14 +46,6 @@
     // Scrolly.
     $('.scrolly').scrolly();
 
-    // Nav.
-
-    // Button.
-
-
-    // Panel.
-
-
     // Carousels.
     $('.carousel').each(function () {
 
