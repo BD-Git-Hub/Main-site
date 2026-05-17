@@ -602,6 +602,29 @@
                 }
             }
 
+            // Progress bar fill (0% at 4:00, 100% at 22:00) and step pass/upcoming states.
+            var startMinsBar = 4 * 60;
+            var endMinsBar = 22 * 60;
+            var clampedBarMins = adj;
+            if (clampedBarMins < startMinsBar) clampedBarMins = startMinsBar;
+            if (clampedBarMins > endMinsBar) clampedBarMins = endMinsBar;
+            var progressT = (clampedBarMins - startMinsBar) / ((endMinsBar - startMinsBar) || 1);
+            progressT = clamp(progressT, 0, 1);
+            track.style.setProperty('--routine-progress', (progressT * 100).toFixed(2) + '%');
+
+            if (steps && steps.length) {
+                for (var pi = 0; pi < steps.length; pi++) {
+                    var stepMins = parseStepMinutes(steps[pi]);
+                    steps[pi].classList.remove('routine-strip__step--passed');
+                    steps[pi].classList.remove('routine-strip__step--upcoming');
+                    if (stepMins != null && adj >= stepMins) {
+                        steps[pi].classList.add('routine-strip__step--passed');
+                    } else {
+                        steps[pi].classList.add('routine-strip__step--upcoming');
+                    }
+                }
+            }
+
             // Swap the small badge icon on the purple marker to match the current section.
             // Position rules (per your request):
             // - 4:00->6:00 (sun): top-right
