@@ -1744,7 +1744,7 @@ body.parallax-off #header #parallax_background {
   padding: 2.25em 2em 1.5em 2em;
   box-shadow: none;
   position: relative;
-  --routine-scroller-pad-top: 120px;
+  --routine-scroller-pad-top: 88px;
 }
 
 /* Beyond the desk — timeline and photos inside .life-content card */
@@ -1794,13 +1794,7 @@ body.parallax-off #header #parallax_background {
 
 .routine-strip__marker {
   position: absolute;
-  /*
-    Place the tile so its arrow points at the bar.
-    Bar center is at: scroller padding-top + 46px + 4px.
-    Tile+arrow height is about: 100px + 11px = 111px.
-    So: top ≈ padTop + 50px - 111px = padTop - 61px.
-  */
-  top: calc(var(--routine-scroller-pad-top) - 86px);
+  top: calc(var(--routine-scroller-pad-top) - 36px);
   left: 0;
   margin: 0;
   transform: translateX(-50%);
@@ -1816,59 +1810,54 @@ body.parallax-off #header #parallax_background {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 120px;
-  height: 120px;
-  border-radius: 16px;
+  width: 72px;
+  height: 72px;
+  border-radius: 8px;
   background: #df7366;
   color: #fff;
-  font-size: 2.7em;
+  font-size: 1.75em;
   line-height: 1;
-  border: 0;
-  box-shadow:
-    0 14px 26px rgba(0, 0, 0, 0.14),
-    0 2px 0 rgba(255, 255, 255, 0.25) inset;
+  border: 1px solid rgba(72, 57, 73, 0.08);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   position: relative;
 }
 
 .routine-strip__marker-badge {
   position: absolute;
-  width: 38px;
-  height: 38px;
-  border-radius: 12px;
-  background: var(--badge-bg, rgba(255, 255, 255, 0.16));
-  /* border: 1px solid var(--badge-border, rgba(255, 255, 255, 0.28)); */
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: var(--badge-bg, rgba(255, 255, 255, 0.2));
   color: #fff;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.42em; /* relative to the marker's 2.7em */
+  font-size: 0.45em;
   line-height: 1;
-  box-shadow:
-    0 10px 18px rgba(0, 0, 0, 0.16),
-    0 2px 0 rgba(255, 255, 255, 0.18) inset;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .routine-strip__marker-badge--top-right {
-  top: 8px;
-  right: 8px;
+  top: 5px;
+  right: 5px;
 }
 
 .routine-strip__marker-badge--bottom-right {
-  right: 8px;
-  bottom: 8px;
+  right: 5px;
+  bottom: 5px;
 }
 
 .routine-strip__marker:after {
   content: '';
   position: absolute;
   left: 50%;
-  bottom: -12px;
+  bottom: -8px;
   width: 0;
   height: 0;
   transform: translateX(-50%);
-  border-left: 11px solid transparent;
-  border-right: 11px solid transparent;
-  border-top: 11px solid #df7366;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 8px solid #df7366;
 }
 
 .routine-strip__scroller {
@@ -1889,7 +1878,7 @@ body.parallax-off #header #parallax_background {
   min-width: 820px;
   --routine-step-width: 132px;
   --routine-progress: 0%;
-  height: 260px;
+  height: 220px;
 }
 
 /* Grey track (full width) — future portion of the day */
@@ -1952,6 +1941,7 @@ body.parallax-off #header #parallax_background {
   padding: 3.9em 0.25em 0 0.25em;
   top: 0;
   transform: translateX(-50%);
+  z-index: 2;
 }
 
 .routine-strip__step.routine-strip__step--slide {
@@ -1961,7 +1951,9 @@ body.parallax-off #header #parallax_background {
 .routine-strip__step--current .routine-strip__dot {
   border-color: #df7366;
   background: #fff;
-  box-shadow: 0 0 0 4px rgba(223, 115, 102, 0.22);
+  box-shadow:
+    0 0 0 2px #fff,
+    0 0 0 5px rgba(223, 115, 102, 0.14);
 }
 
 .routine-strip__step--current .routine-strip__time,
@@ -1970,10 +1962,8 @@ body.parallax-off #header #parallax_background {
 }
 
 .routine-strip__step--current.routine-strip__step--passed .routine-strip__icon {
-  transform: translateY(-2px);
-  box-shadow:
-    0 18px 34px rgba(0, 0, 0, 0.16),
-    0 2px 0 rgba(255, 255, 255, 0.25) inset;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1992,31 +1982,30 @@ body.parallax-off #header #parallax_background {
   background: #fff;
   border: 2px solid rgba(72, 57, 73, 0.25);
   transform: translateX(-50%);
-  z-index: 1;
+  z-index: 3;
+  box-shadow: 0 0 0 2px #fff;
 }
 
 .routine-strip__icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 54px;
-  height: 54px;
-  border-radius: 16px;
-  border: 0;
-  color: rgba(255, 255, 255, 0.92);
+  width: 48px;
+  height: 48px;
+  border-radius: 6px;
+  border: 1px solid rgba(72, 57, 73, 0.06);
+  color: rgba(255, 255, 255, 0.95);
   background: #c5c5c8;
-  font-size: 1.35em;
+  font-size: 1.2em;
   line-height: 1;
   margin-bottom: 0.65em;
-  box-shadow:
-    0 8px 16px rgba(0, 0, 0, 0.08),
-    0 1px 0 rgba(255, 255, 255, 0.2) inset;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
   transition: background 0.35s ease, box-shadow 0.35s ease, transform 0.35s ease;
 }
 
 .routine-strip__step--upcoming .routine-strip__dot {
   border-color: rgba(72, 57, 73, 0.18);
-  background: #ececee;
+  background: #fff;
 }
 
 .routine-strip__step--upcoming .routine-strip__time,
@@ -2030,9 +2019,7 @@ body.parallax-off #header #parallax_background {
 }
 
 .routine-strip__step--passed .routine-strip__icon {
-  box-shadow:
-    0 14px 26px rgba(0, 0, 0, 0.14),
-    0 2px 0 rgba(255, 255, 255, 0.25) inset;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
 .routine-strip__time {
@@ -2051,7 +2038,7 @@ body.parallax-off #header #parallax_background {
   color: #5b5b5b;
 }
 
-/* Step tile colors — only after that milestone is reached */
+/* Step tile colors — only after milestone is reached */
 .routine-strip__step--passed:nth-child(1) .routine-strip__icon { background: #f3d02c; }
 .routine-strip__step--passed:nth-child(2) .routine-strip__icon { background: #f3aa2c; }
 .routine-strip__step--passed:nth-child(3) .routine-strip__icon { background: #33c7e7; }
@@ -2071,14 +2058,8 @@ body.parallax-off #header #parallax_background {
     min-width: 760px;
     padding: 0 1em 0 1em;
   }
-  /*
-    On smaller screens, sit the marker above the progress bar with ~5px gap.
-    Bar top = scroller padding-top + 46px.
-    Marker box (120px) + arrow (11px) + 5px gap = 136px below the bar's top
-    means the marker's top must be: padTop + 46px - 136px = padTop - 90px.
-  */
   .routine-strip__marker {
-    top: calc(var(--routine-scroller-pad-top) - 90px);
+    top: calc(var(--routine-scroller-pad-top) - 36px);
   }
 }
 
