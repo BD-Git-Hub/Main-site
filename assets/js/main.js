@@ -561,18 +561,53 @@
             return Math.max(a, Math.min(b, n));
         }
 
+        function getTimelineMinsFromUk(ukMins) {
+            var startMins = 4 * 60;
+            return (ukMins < startMins) ? (ukMins + 1440) : ukMins;
+        }
+
+        function getTargetTimelineMins() {
+            var startMins = 4 * 60;
+            var endMins = 22 * 60;
+            var adj = getTimelineMinsFromUk(getUkMinutesSinceMidnight());
+            return clamp(adj, startMins, endMins);
+        }
+
+        var animating = false;
+        var routineActive = false;
+        var lastProgressT = null;
+        var introDurationMs = 2800;
+        var startMinsBar = 4 * 60;
+        var endMinsBar = 22 * 60;
+        var totalBarSpan = (endMinsBar - startMinsBar) || 1;
+
         function updateMarkerPosition(opts) {
             opts = opts || {};
 
-            // Lay out the steps as an even-hour ruler before measuring dots.
             layoutStepsEvenHours();
 
-            var ukMins = getUkMinutesSinceMidnight();
+            var startMins = 4 * 60;
+            var adj;
 
-            // Map time to the bar using your timeline "stops" (4:00, 6:00, 9:00, 14:00, 17:00, 22:00).
-            // Metaphor: it's a ruler with special tick marks; we slide between the nearest ticks.
-            var startMins = 4 * 60; // 4:00 AM
-            var adj = (ukMins < startMins) ? (ukMins + 1440) : ukMins; // after midnight -> continue past 22:00
+            var progressT;
+
+            if (opts.progressT != null) {
+                progressT = clamp(opts.progressT, 0, 1);
+                lastProgressT = progressT;
+                adj = startMinsBar + progressT * totalBarSpan;
+            } else if (opts.displayMins != null) {
+                adj = opts.displayMins;
+                adj = clamp(adj, startMinsBar, endMinsBar);
+                progressT = (adj - startMinsBar) / totalBarSpan;
+                lastProgressT = progressT;
+            } else {
+                adj = getTimelineMinsFromUk(getUkMinutesSinceMidnight());
+                adj = clamp(adj, startMinsBar, endMinsBar);
+                progressT = (adj - startMinsBar) / totalBarSpan;
+                lastProgressT = null;
+            }
+
+            progressT = clamp(progressT, 0, 1);
 
             var points = [
                 { mins: 4 * 60, pos: 0.0 },        // 4:00 AM
@@ -584,11 +619,11 @@
                 { mins: 28 * 60, pos: 1.0 }   // 4:00 AM next day (stay at end overnight)
             ];
 
-            // Move the "current step" highlight (dot + tile) to match the time.
-            // We pick the latest tick that is <= the current time (e.g. 06:00 -> Gym).
+            // Current step = latest milestone the marker has reached on the bar.
             var currentIdx = 0;
             for (var ci = 0; ci < 6; ci++) {
-                if (adj >= points[ci].mins) currentIdx = ci;
+                var milestoneT = (points[ci].mins - startMinsBar) / totalBarSpan;
+                if (progressT >= milestoneT) currentIdx = ci;
             }
             if (steps && steps.length) {
                 for (var s = 0; s < steps.length; s++) {
@@ -602,25 +637,33 @@
                 }
             }
 
-            // Progress bar fill (0% at 4:00, 100% at 22:00) and step pass/upcoming states.
-            var startMinsBar = 4 * 60;
-            var endMinsBar = 22 * 60;
-            var clampedBarMins = adj;
-            if (clampedBarMins < startMinsBar) clampedBarMins = startMinsBar;
-            if (clampedBarMins > endMinsBar) clampedBarMins = endMinsBar;
-            var progressT = (clampedBarMins - startMinsBar) / ((endMinsBar - startMinsBar) || 1);
-            progressT = clamp(progressT, 0, 1);
             track.style.setProperty('--routine-progress', (progressT * 100).toFixed(2) + '%');
 
+            var trackRect = track.getBoundingClientRect();
+            var spanPx = trackRect.width || 1;
+            var stepWidth2 = (steps && steps[0]) ? (steps[0].getBoundingClientRect().width || 132) : 132;
+            var edge2 = stepWidth2 / 2;
+            var usable2 = Math.max(1, spanPx - stepWidth2);
+            var leftWithinTrack = edge2 + usable2 * progressT;
+            var dotPastPx = 3;
+
             if (steps && steps.length) {
+                var allGrey = !!opts.forceAllUpcoming || progressT <= 0;
                 for (var pi = 0; pi < steps.length; pi++) {
                     var stepMins = parseStepMinutes(steps[pi]);
+                    var stepT = (stepMins != null) ? ((stepMins - startMinsBar) / totalBarSpan) : 1;
+                    var stepLeftPx = edge2 + usable2 * stepT;
                     steps[pi].classList.remove('routine-strip__step--passed');
+                    steps[pi].classList.remove('routine-strip__step--dot-passed');
                     steps[pi].classList.remove('routine-strip__step--upcoming');
-                    if (stepMins != null && adj >= stepMins) {
+                    if (!allGrey && stepMins != null && progressT >= stepT) {
                         steps[pi].classList.add('routine-strip__step--passed');
                     } else {
                         steps[pi].classList.add('routine-strip__step--upcoming');
+                    }
+                    // Bar circles colour only after the profile tile centre moves past the dot.
+                    if (!allGrey && stepMins != null && leftWithinTrack > stepLeftPx + dotPastPx) {
+                        steps[pi].classList.add('routine-strip__step--dot-passed');
                     }
                 }
             }
@@ -683,25 +726,6 @@
                 markerBadge.style.setProperty('--badge-border', 'rgba(255, 255, 255, 0.35)');
             }
 
-            // Position the marker using the same "even-hour ruler" math as the tiles.
-            // This avoids a mid-animation mismatch while the step tiles are sliding.
-            var trackRect = track.getBoundingClientRect();
-            var spanPx = trackRect.width || 1;
-
-            var startMins2 = 4 * 60;
-            var endMins2 = 22 * 60;
-            var clampedMins = adj;
-            if (clampedMins < startMins2) clampedMins = startMins2;
-            if (clampedMins > endMins2) clampedMins = endMins2;
-
-            var totalMins2 = (endMins2 - startMins2) || 1;
-            var tt = (clampedMins - startMins2) / totalMins2; // 0..1
-            tt = clamp(tt, 0, 1);
-
-            var stepWidth2 = (steps && steps[0]) ? (steps[0].getBoundingClientRect().width || 132) : 132;
-            var edge2 = stepWidth2 / 2;
-            var usable2 = Math.max(1, spanPx - stepWidth2);
-            var leftWithinTrack = edge2 + usable2 * tt;
             // Position marker inside the scroller so it scrolls with the timeline.
             var leftPx = track.offsetLeft + leftWithinTrack;
             marker.style.left = leftPx + 'px';
@@ -712,10 +736,10 @@
             var targetScrollLeft = xWithinTrack - (scroller.clientWidth / 2);
             targetScrollLeft = clamp(targetScrollLeft, 0, (scroller.scrollWidth - scroller.clientWidth));
 
-            if (opts.scrollIntoView) {
+            // During intro, scroll must stay locked to the marker (no smooth-scroll lag).
+            if (animating || opts.scrollIntoView) {
                 scroller.scrollLeft = targetScrollLeft;
             } else if (!reduceMotion) {
-                // Smooth scroll when allowed.
                 try {
                     scroller.scrollTo({ left: targetScrollLeft, behavior: 'smooth' });
                 } catch (e) {
@@ -726,46 +750,127 @@
             }
         }
 
-        // Initial placement (section is always visible).
-        var routineActive = true;
-        updateMarkerPosition({ scrollIntoView: true });
+        function setIntroMotion(on) {
+            track.classList.toggle('routine-strip--intro-active', !!on);
+            marker.classList.toggle('routine-strip--intro-active', !!on);
+            if (on) {
+                if (steps && steps.length) {
+                    for (var si = 0; si < steps.length; si++) {
+                        steps[si].classList.add('routine-strip__step--slide');
+                    }
+                }
+            } else if (steps && steps.length) {
+                for (var sj = 0; sj < steps.length; sj++) {
+                    steps[sj].classList.remove('routine-strip__step--slide');
+                }
+            }
+        }
 
-        // Expose a manual trigger for testing in DevTools:
-        // window.__updateRoutineMarker()
+        function resetRoutineToStart(opts) {
+            opts = opts || {};
+            var startMins = 4 * 60;
+            setIntroMotion(false);
+            updateMarkerPosition({
+                progressT: 0,
+                forceAllUpcoming: true,
+                scrollIntoView: !!opts.scrollIntoView
+            });
+        }
+
+        function playIntroAnimation() {
+            if (animating) return;
+
+            var startMins = 4 * 60;
+            var targetMins = getTargetTimelineMins();
+
+            if (reduceMotion || targetMins <= startMins) {
+                routineActive = true;
+                setIntroMotion(false);
+                updateMarkerPosition({ scrollIntoView: true });
+                return;
+            }
+
+            animating = true;
+            routineActive = false;
+            setIntroMotion(true);
+            resetRoutineToStart();
+
+            var targetProgressT = (targetMins - startMins) / totalBarSpan;
+            // Same pixels-per-second whether we stop at noon or 10pm (not a fixed 2.8s to target).
+            var introRunMs = Math.max(introDurationMs * targetProgressT, 400);
+            var t0 = performance.now();
+
+            function tick(now) {
+                var elapsed = now - t0;
+                var t = clamp(elapsed / introRunMs, 0, 1);
+                var progressT = targetProgressT * t;
+
+                updateMarkerPosition({
+                    progressT: progressT,
+                    scrollIntoView: elapsed < 120
+                });
+
+                if (t < 1) {
+                    requestAnimationFrame(tick);
+                } else {
+                    animating = false;
+                    routineActive = true;
+                    setIntroMotion(false);
+                    updateMarkerPosition({ scrollIntoView: false });
+                }
+            }
+
+            requestAnimationFrame(tick);
+        }
+
+        // Expose for DevTools: window.__playRoutineIntro() / window.__updateRoutineMarker()
         window.__updateRoutineMarker = function () {
             updateMarkerPosition({ scrollIntoView: false });
         };
 
-        // Called after the hidden section expands (see Show More click handler).
+        window.__playRoutineIntro = playIntroAnimation;
+
         window.__activateRoutineMarker = function () {
-            routineActive = true;
-            marker.classList.add('routine-strip__marker--slide');
-            if (steps && steps.length) {
-                for (var i = 0; i < steps.length; i++) {
-                    steps[i].classList.add('routine-strip__step--slide');
-                }
-            }
-            updateMarkerPosition({ scrollIntoView: false });
+            playIntroAnimation();
         };
 
-        // Park marker at the 4:00 AM dot (no slide), used right after expand completes.
         window.__parkRoutineMarkerAtStart = function () {
-            marker.classList.remove('routine-strip__marker--slide');
-            marker.style.visibility = 'visible';
-            scroller.style.visibility = 'visible';
-            parkStepsAtStart();
-            var prev = HARD_CODED_UK_TIME;
-            HARD_CODED_UK_TIME = "04:00";
-            updateMarkerPosition({ scrollIntoView: true });
-            HARD_CODED_UK_TIME = prev;
+            routineActive = false;
+            resetRoutineToStart({ scrollIntoView: true });
         };
 
-        // Update frequently, but only do work when needed.
-        // (This makes DevTools overrides feel instant, without heavy layout churn.)
+        resetRoutineToStart();
+
+        var lifeSection = document.getElementById('lifeSection');
+        if (lifeSection && 'IntersectionObserver' in window) {
+            var lifeWasVisible = false;
+
+            var lifeObserver = new IntersectionObserver(function (entries) {
+                entries.forEach(function (entry) {
+                    var visible = entry.isIntersecting && entry.intersectionRatio >= 0.3;
+
+                    if (visible && !lifeWasVisible) {
+                        lifeWasVisible = true;
+                        playIntroAnimation();
+                    } else if (!visible && lifeWasVisible) {
+                        lifeWasVisible = false;
+                        animating = false;
+                        routineActive = false;
+                        resetRoutineToStart();
+                    }
+                });
+            }, { threshold: [0, 0.3, 0.5] });
+
+            lifeObserver.observe(lifeSection);
+        } else {
+            routineActive = true;
+            updateMarkerPosition({ scrollIntoView: false });
+        }
+
         var lastMinuteKey = null;
         var lastOverrideKey = null;
         window.setInterval(function () {
-            if (!routineActive) return;
+            if (!routineActive || animating) return;
             var now = new Date();
             var minuteKey = now.getFullYear() + '-' + now.getMonth() + '-' + now.getDate() + '-' + now.getHours() + '-' + now.getMinutes();
             var overrideKey = HARD_CODED_UK_TIME || (window.__routineUkTimeOverride ? String(window.__routineUkTimeOverride) : '');
@@ -777,9 +882,14 @@
             }
         }, 1000);
 
-        // Recalculate on resize because widths change.
         window.addEventListener('resize', function () {
-            updateMarkerPosition({ scrollIntoView: false });
+            if (animating && lastProgressT != null) {
+                updateMarkerPosition({ progressT: lastProgressT, scrollIntoView: false });
+            } else if (routineActive) {
+                updateMarkerPosition({ scrollIntoView: false });
+            } else {
+                resetRoutineToStart();
+            }
         });
     })();
 

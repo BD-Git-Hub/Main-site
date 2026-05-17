@@ -1797,13 +1797,13 @@ body.parallax-off #header #parallax_background {
   top: calc(var(--routine-scroller-pad-top) - 36px);
   left: 0;
   margin: 0;
-  transform: translateX(-50%);
+  transform: translate3d(-50%, 0, 0);
   pointer-events: none;
-  will-change: transform;
+  will-change: left, transform;
 }
 
-.routine-strip__marker.routine-strip__marker--slide {
-  transition: left 700ms ease;
+.routine-strip__marker.routine-strip--intro-active {
+  transition: none !important;
 }
 
 .routine-strip__marker-icon {
@@ -1933,6 +1933,10 @@ body.parallax-off #header #parallax_background {
   transition: clip-path 700ms ease;
 }
 
+.routine-strip__track.routine-strip--intro-active:after {
+  transition: none;
+}
+
 .routine-strip__step {
   position: absolute;
   width: 132px;
@@ -1948,12 +1952,10 @@ body.parallax-off #header #parallax_background {
   transition: left 700ms ease;
 }
 
-.routine-strip__step--current .routine-strip__dot {
-  border-color: #df7366;
+.routine-strip__step--current:not(.routine-strip__step--passed) .routine-strip__dot {
+  border-color: rgba(72, 57, 73, 0.18);
   background: #fff;
-  box-shadow:
-    0 0 0 2px #fff,
-    0 0 0 5px rgba(223, 115, 102, 0.14);
+  box-shadow: 0 0 0 2px #fff;
 }
 
 .routine-strip__step--current .routine-strip__time,
@@ -1984,6 +1986,7 @@ body.parallax-off #header #parallax_background {
   transform: translateX(-50%);
   z-index: 3;
   box-shadow: 0 0 0 2px #fff;
+  transition: background 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
 }
 
 .routine-strip__icon {
@@ -2013,9 +2016,58 @@ body.parallax-off #header #parallax_background {
   color: rgba(91, 91, 91, 0.5);
 }
 
-.routine-strip__step--passed .routine-strip__dot {
-  border-color: rgba(72, 57, 73, 0.35);
-  background: #fff;
+.routine-strip__step--dot-passed:nth-child(1) .routine-strip__dot {
+  background: #f3d02c;
+  border-color: #e0bc28;
+}
+
+.routine-strip__step--dot-passed:nth-child(2) .routine-strip__dot {
+  background: #f3aa2c;
+  border-color: #e09a28;
+}
+
+.routine-strip__step--dot-passed:nth-child(3) .routine-strip__dot {
+  background: #33c7e7;
+  border-color: #2ab3d0;
+}
+
+.routine-strip__step--dot-passed:nth-child(4) .routine-strip__dot {
+  background: #37cc74;
+  border-color: #2eb866;
+}
+
+.routine-strip__step--dot-passed:nth-child(5) .routine-strip__dot {
+  background: #9b8cff;
+  border-color: #8a7ae8;
+}
+
+.routine-strip__step--dot-passed:nth-child(6) .routine-strip__dot {
+  background: #b15cff;
+  border-color: #9f4ee8;
+}
+
+.routine-strip__step--current.routine-strip__step--dot-passed:nth-child(1) .routine-strip__dot {
+  box-shadow: 0 0 0 2px #fff, 0 0 0 5px rgba(243, 208, 44, 0.4);
+}
+
+.routine-strip__step--current.routine-strip__step--dot-passed:nth-child(2) .routine-strip__dot {
+  box-shadow: 0 0 0 2px #fff, 0 0 0 5px rgba(243, 170, 44, 0.4);
+}
+
+.routine-strip__step--current.routine-strip__step--dot-passed:nth-child(3) .routine-strip__dot {
+  box-shadow: 0 0 0 2px #fff, 0 0 0 5px rgba(51, 199, 231, 0.4);
+}
+
+.routine-strip__step--current.routine-strip__step--dot-passed:nth-child(4) .routine-strip__dot {
+  box-shadow: 0 0 0 2px #fff, 0 0 0 5px rgba(55, 204, 116, 0.4);
+}
+
+.routine-strip__step--current.routine-strip__step--dot-passed:nth-child(5) .routine-strip__dot {
+  box-shadow: 0 0 0 2px #fff, 0 0 0 5px rgba(155, 140, 255, 0.4);
+}
+
+.routine-strip__step--current.routine-strip__step--dot-passed:nth-child(6) .routine-strip__dot {
+  box-shadow: 0 0 0 2px #fff, 0 0 0 5px rgba(177, 92, 255, 0.4);
 }
 
 .routine-strip__step--passed .routine-strip__icon {
