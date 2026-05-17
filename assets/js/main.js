@@ -233,13 +233,13 @@
 
     $("#startBtn").click(function () {
         $('html,body').animate({
-                scrollTop: $("#bioTitleHeader").offset().top
+                scrollTop: $("#bioHeading").offset().top
             },
             1500);
     });
     $("#bioBtn").click(function () {
         $('html,body').animate({
-                scrollTop: $("#main").offset().top
+                scrollTop: $("#bioHeading").offset().top
             },
             3000);
     });
@@ -251,9 +251,9 @@
             2500);
     });
 
-    $("#projectBtn").click(function () {
+    $("#portfolioBtn").click(function () {
         $('html,body').animate({
-                scrollTop: $("#projectsHeader").offset().top
+                scrollTop: $("#portfolioHeader").offset().top
             },
             2000);
     });

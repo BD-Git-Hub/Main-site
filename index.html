@@ -54,6 +54,7 @@
                 <h1><a href="index.html" id="logo">Bovin De Souza</a></h1>
                 <hr />
                 <h2>Web developer, Brighton (UK)</h2>
+                <p class="heroIntro">Explore my work in web development, 3D production, and everything in between.</p>
 
                 <footer>
                     <a href="#" class="button circled scrolly" id="startBtn">Start</a>
@@ -66,44 +67,36 @@
                     <li><a href="#" id="homeBtn">HOME</a></li>
                     <li><a href="#" id="bioBtn">BIO</a></li>
                     <li><a href="#" id="skillsBtn">SKILLS</a></li>
-                    <li><a href="#" id="projectBtn">PROJECTS</a></li>
+                    <li><a href="#" id="portfolioBtn">PORTFOLIO</a></li>
                     <li><a href="#" id="contactBtn">CONTACT</a></li>
                 </ul>
             </nav>
 
         </div>
 
-        <!-- title bio (same pattern as Skills: .banner) -->
-        <section class="banner" id="bioTitleBanner">
-            <header id="bioTitleHeader">
-                <h2 id="bioWelcomeHeading">Welcome to My Portfolio</h2>
-                <p>
-                    Explore my skills in web development, 3D production and everything in between.
-                </p>
-            </header>
-        </section>
-
-        <!-- Bio body (same pattern as Projects: .wrapper.style1 + .container.special + .row) -->
+        <!-- Bio -->
         <div class="wrapper style1" id="bioWrapper">
             <section id="bioFeatures" class="container special" aria-labelledby="bioHeading">
                 <header>
                     <h2 id="bioHeading">BIO</h2>
                     <p>Background, education, and interests beyond the desk.</p>
                 </header>
-                <div class="row">
+                <div class="row gtr-0">
                     <article id="main" class="col-12 col-12-mobile special">
-                        <p>Raised in the seaside town of Eastbourne, England, Bovin De Souza is a creative and technically skilled web developer with a strong eye for design, efficiency, and innovation. Known for his productivity and forward-thinking approach, he combines technical expertise with a refined sense of creativity and problem-solving.</p>
-                        <p>A graduate of the University of Brighton with a degree in Computer Science specializing in Digital Games Production, he brings a diverse skill set spanning both web development and 3D production.</p>
-                        <p>Outside of work, he spends his time building technical projects, reading about personal development, socializing, and pushing new PRs at the gym.</p>
+                        <p>During my adolescence, moving to the UK made me feel somewhat out of place, and I often wondered how I could better integrate into society. This curiosity sparked my interest in human interactions and the challenges people face in connecting with one another.</p>
+                        <p>After graduating from university, these reflections evolved into ideas that, combined with my software skills, transformed into potential applications. This vision became the driving force behind developing my technical expertise and exploring the vast possibilities of software development. Now, with AI accelerating the realization of this vision, I am actively exploring the frontiers of AI, knowing that the applications I develop could have a transformative impact on humanity.</p>
+                        <p>This journey continues to inspire me to leverage technology to bridge gaps in human interaction and create meaningful, real-world impact.</p>
+                        <!-- Show More (reveals Daily Routine — disabled while section is commented out)
                         <footer>
                             <a class="button" id="showDivBtn">Show More</a>
                         </footer>
+                        -->
                     </article>
                 </div>
             </section>
         </div>
 
-        <!--HIDDENDIV-->
+        <!-- Daily Routine section (commented out for now)
         <div class="wrapper2 style2" id="hiddenDiv">
             <article class="container special">
                 <header>
@@ -170,6 +163,7 @@
                 </header>
             </article>
         </div>
+        end Daily Routine -->
 
         <!-- skills -->
         <section class="banner">
@@ -311,11 +305,30 @@
         <!-- Projects -->
         <div class="wrapper style1">
             <section id="features" class="container special">
-                <header id="projectsHeader" class="fadeTarget">
-                    <h2>PROJECTS</h2>
-                    <p>A selection of my recent projects.</p>
+                <header id="portfolioHeader" class="fadeTarget">
+                    <h2>PORTFOLIO</h2>
+                    <p>A selection of my recent works.</p>
                 </header>
                 <div class="row">
+                    <!-- Automate me (coming soon) -->
+                    <article class="col-4 col-12-mobile special fadeTarget portfolio-card portfolio-card--coming-soon">
+                        <div class="image featured portfolio-card__media">
+                            <img src="images/projectimg/automate-me-placeholder.svg" alt="" class="fadeTarget" />
+                            <div class="portfolio-card__overlay" aria-hidden="true">
+                                <span class="portfolio-card__badge">Coming soon</span>
+                                <div class="portfolio-card__progress" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" aria-label="Development progress">
+                                    <span class="portfolio-card__progress-fill" style="width: 40%"></span>
+                                </div>
+                                <span class="portfolio-card__progress-text">40% complete</span>
+                            </div>
+                        </div>
+                        <header class="fadeTarget">
+                            <h3>Automate me <span class="portfolio-card__subtitle">(Mobile app)</span></h3>
+                        </header>
+                        <p class="fadeTarget projectDesc">Coming soon</p>
+                        <p class="fadeTarget"><span class="keywordsLabel">Keywords:</span> Mobile, Automation</p>
+                    </article>
+
                     <!-- Cut To Size -->
                     <article class="col-4 col-12-mobile special fadeTarget fadeTargetTwo">
                         <a href="https://cuttosize.co.uk/" class="image featured"><img src="images/projectimg/Cuttosize.png" alt="Cut To Size website preview" class="fadeTarget" /></a>
