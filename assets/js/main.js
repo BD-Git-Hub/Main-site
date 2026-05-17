@@ -236,6 +236,13 @@
             3000);
     });
 
+    $("#lifeBtn").click(function () {
+        $('html,body').animate({
+                scrollTop: $("#lifeHeading").offset().top
+            },
+            2800);
+    });
+
     $("#skillsBtn").click(function () {
         $('html,body').animate({
                 scrollTop: $("#skillsHeader").offset().top
@@ -255,50 +262,6 @@
             },
             1900);
     });
-
-    //hide hiddenDiv 
-    /* $('#hiddenDiv').hide();
-     $('#hiddenDiv img').fadeTo(0, 0, function () {});
-
-     //show Div buttons 
-     $("#showDivBtn").click(function () {
-         $('#hiddenDiv').show(1000);
-         $('#hiddenDiv img').delay(1000).fadeTo(1000, 1, function () {});
-
-     });*/
-
-    $('#hiddenDiv').hide(1000);
-    $('#hiddenDiv img').fadeTo(0, 0, function () {});
-    var x = true;
-    $("#showDivBtn").click(function () {
-        if (x) {
-            // Start expand.
-            $('#hiddenDiv').show(1000, function () {
-                // After expand: slide to current time.
-                window.setTimeout(function () {
-                    if (window.__activateRoutineMarker)
-                        window.__activateRoutineMarker();
-                }, 50);
-            });
-
-            // As soon as the element becomes display:block (animation start),
-            // park the marker exactly at 4:00 AM so it appears correct immediately.
-            window.requestAnimationFrame(function () {
-                if (window.__parkRoutineMarkerAtStart)
-                    window.__parkRoutineMarkerAtStart();
-            });
-            $('#hiddenDiv img').delay(1000).fadeTo(1000, 1, function () {});
-        } else {
-
-            $('#hiddenDiv img').fadeTo(1000, 0, function () {});
-            $('#hiddenDiv').delay(1000).hide(1000);
-
-
-        }
-        x = !x;
-    });
-
-
 
     //skills section buttons 
     var state = true;
@@ -740,19 +703,9 @@
             }
         }
 
-        // Initial placement.
+        // Initial placement (section is always visible).
         var routineActive = true;
-        var hiddenDiv = document.getElementById('hiddenDiv');
-        if (hiddenDiv && window.getComputedStyle(hiddenDiv).display === 'none') {
-            // Routine strip is hidden initially; don't measure/layout yet (would be wrong).
-            routineActive = false;
-            // Avoid showing the marker in the wrong place while collapsed.
-            marker.style.visibility = 'hidden';
-            // Also avoid showing step tiles/dots in the wrong place while collapsed.
-            scroller.style.visibility = 'hidden';
-        } else {
-            updateMarkerPosition({ scrollIntoView: true });
-        }
+        updateMarkerPosition({ scrollIntoView: true });
 
         // Expose a manual trigger for testing in DevTools:
         // window.__updateRoutineMarker()

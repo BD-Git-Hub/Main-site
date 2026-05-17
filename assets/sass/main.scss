@@ -1219,12 +1219,92 @@ body.homepage {
     margin-bottom: 0;
 }
 
-#bioWrapper + #hiddenDiv {
+#bioWrapper + #lifeSection {
     margin-top: 0;
-    padding-top: 1.25em;
+    padding-top: 0;
 }
 
-#bioWrapper + .banner {
+#lifeSection {
+    background: #f4f5f6;
+    margin-bottom: 0;
+    padding: 0 0 1.5em;
+}
+
+#lifeFeatures {
+    margin-bottom: 0;
+
+    > header {
+        margin-bottom: 0.85em;
+
+        > p {
+            color: #6f6a6f;
+            font-weight: 300;
+            font-size: 1.1em;
+            line-height: 1.45;
+            margin: 0.35em 0 0;
+        }
+    }
+}
+
+.life-content {
+    width: 100%;
+    max-width: 52em;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 1.25em 1.35em 1.35em;
+    background: #fff;
+    border: 1px solid rgba(72, 57, 73, 0.08);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+#lifeSection .routine-strip {
+    background: transparent;
+    margin: 0 0 1.25em;
+}
+
+#lifeSection .routine-strip .container {
+    padding: 0;
+}
+
+#lifeSection .routine-strip__card {
+    max-width: none;
+    margin: 0;
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+    padding: 0.75em 0 0.5em;
+    background: transparent;
+}
+
+#lifeSection .life-photos {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1em;
+    margin: 0;
+    padding-top: 1.25em;
+    border-top: 1px solid rgba(72, 57, 73, 0.08);
+}
+
+#lifeSection .life-photos img {
+    margin: 0;
+    width: 100%;
+    max-width: 9.5em;
+    height: auto;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-radius: 0;
+    border: 1px solid rgba(72, 57, 73, 0.08);
+    filter: none;
+    transition: box-shadow 0.2s ease;
+
+    &:hover {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        filter: none;
+    }
+}
+
+#lifeSection + .banner {
     padding-top: 2.5em;
 }
 
@@ -1248,12 +1328,24 @@ body.homepage {
         padding: 1.1em 1em 1em;
     }
 
-    #bioWrapper + .banner {
+    #lifeSection + .banner {
         padding-top: 1.75em;
     }
 
-    #bioWrapper + #hiddenDiv {
-        padding-top: 1em;
+    #lifeSection {
+        padding: 0 1em 1em;
+    }
+
+    .life-content {
+        padding: 1.1em 1em 1em;
+    }
+
+    #lifeSection .routine-strip__card {
+        padding: 0.5em 0 0.25em;
+    }
+
+    #lifeSection .life-photos img {
+        max-width: 7.5em;
     }
 }
 
@@ -1901,7 +1993,7 @@ body.homepage {
         margin-bottom: 0;
     }
 
-    #bioWrapper + .banner {
+    #lifeSection + .banner {
         padding-top: 1.75em;
     }
 
@@ -2105,30 +2197,6 @@ body.homepage {
 }
 
 
-
-//HiddenDiv 
-#hiddenDiv {
-    article {
-        header {
-            div img {
-                margin: 2.5em;
-                width: 300px;
-                height: 300px;
-                border-radius: 1em;
-                filter: brightness(90%);
-                transition: filter 1s;
-
-
-
-            }
-            img:hover {
-                filter: brightness(110%);
-                transition: filter 1s;
-
-            }
-        }
-    }
-}
 
 /*-----------------------PARALLAX BACKGROUND---------------------------*/
 
