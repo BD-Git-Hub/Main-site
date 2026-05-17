@@ -237,10 +237,20 @@
     });
 
     $("#lifeBtn").click(function () {
+        if (window.__cancelRoutineIntroSchedule) {
+            window.__cancelRoutineIntroSchedule();
+        }
+        window.__lifeNavScrollPending = true;
         $('html,body').animate({
                 scrollTop: $("#lifeHeading").offset().top
             },
-            2800);
+            2800,
+            function () {
+                window.__lifeNavScrollPending = false;
+                if (window.__scheduleRoutineIntro) {
+                    window.__scheduleRoutineIntro(window.__routineIntroDelayAfterNav || 400);
+                }
+            });
     });
 
     $("#skillsBtn").click(function () {
@@ -575,8 +585,37 @@
 
         var animating = false;
         var routineActive = false;
+        var introHasPlayed = false;
         var lastProgressT = null;
         var introDurationMs = 2800;
+        var introDelayOnScrollMs = 500;
+        var introDelayAfterNavMs = 400;
+        var introDelayTimer = null;
+        var lifeWasVisible = false;
+
+        window.__lifeNavScrollPending = false;
+        window.__routineIntroDelayAfterNav = introDelayAfterNavMs;
+
+        function cancelScheduledIntro() {
+            if (introDelayTimer) {
+                window.clearTimeout(introDelayTimer);
+                introDelayTimer = null;
+            }
+        }
+
+        function scheduleIntro(delayMs) {
+            if (introHasPlayed || animating) return;
+            cancelScheduledIntro();
+            introDelayTimer = window.setTimeout(function () {
+                introDelayTimer = null;
+                if (!introHasPlayed && lifeWasVisible) {
+                    playIntroAnimation();
+                }
+            }, delayMs);
+        }
+
+        window.__scheduleRoutineIntro = scheduleIntro;
+        window.__cancelRoutineIntroSchedule = cancelScheduledIntro;
         var startMinsBar = 4 * 60;
         var endMinsBar = 22 * 60;
         var totalBarSpan = (endMinsBar - startMinsBar) || 1;
@@ -777,13 +816,16 @@
             });
         }
 
-        function playIntroAnimation() {
+        function playIntroAnimation(opts) {
+            opts = opts || {};
             if (animating) return;
+            if (introHasPlayed && !opts.force) return;
 
             var startMins = 4 * 60;
             var targetMins = getTargetTimelineMins();
 
             if (reduceMotion || targetMins <= startMins) {
+                introHasPlayed = true;
                 routineActive = true;
                 setIntroMotion(false);
                 updateMarkerPosition({ scrollIntoView: true });
@@ -814,6 +856,7 @@
                     requestAnimationFrame(tick);
                 } else {
                     animating = false;
+                    introHasPlayed = true;
                     routineActive = true;
                     setIntroMotion(false);
                     updateMarkerPosition({ scrollIntoView: false });
@@ -828,10 +871,12 @@
             updateMarkerPosition({ scrollIntoView: false });
         };
 
-        window.__playRoutineIntro = playIntroAnimation;
+        window.__playRoutineIntro = function (force) {
+            playIntroAnimation({ force: !!force });
+        };
 
         window.__activateRoutineMarker = function () {
-            playIntroAnimation();
+            playIntroAnimation({ force: true });
         };
 
         window.__parkRoutineMarkerAtStart = function () {
@@ -843,20 +888,29 @@
 
         var lifeSection = document.getElementById('lifeSection');
         if (lifeSection && 'IntersectionObserver' in window) {
-            var lifeWasVisible = false;
-
             var lifeObserver = new IntersectionObserver(function (entries) {
                 entries.forEach(function (entry) {
                     var visible = entry.isIntersecting && entry.intersectionRatio >= 0.3;
 
                     if (visible && !lifeWasVisible) {
                         lifeWasVisible = true;
-                        playIntroAnimation();
+                        if (!introHasPlayed) {
+                            if (window.__lifeNavScrollPending) {
+                                return;
+                            }
+                            scheduleIntro(introDelayOnScrollMs);
+                        } else {
+                            routineActive = true;
+                            updateMarkerPosition({ scrollIntoView: false });
+                        }
                     } else if (!visible && lifeWasVisible) {
                         lifeWasVisible = false;
-                        animating = false;
-                        routineActive = false;
-                        resetRoutineToStart();
+                        cancelScheduledIntro();
+                        if (!introHasPlayed) {
+                            animating = false;
+                            routineActive = false;
+                            resetRoutineToStart();
+                        }
                     }
                 });
             }, { threshold: [0, 0.3, 0.5] });
@@ -885,7 +939,7 @@
         window.addEventListener('resize', function () {
             if (animating && lastProgressT != null) {
                 updateMarkerPosition({ progressT: lastProgressT, scrollIntoView: false });
-            } else if (routineActive) {
+            } else if (routineActive || introHasPlayed) {
                 updateMarkerPosition({ scrollIntoView: false });
             } else {
                 resetRoutineToStart();
