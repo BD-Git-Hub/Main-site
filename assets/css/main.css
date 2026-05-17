@@ -2195,7 +2195,9 @@ body.parallax-off #header #parallax_background {
   .carousel.is-inview .backward {
     left: -3em; }
   .carousel .forward,
-  .carousel .backward {
+  .carousel .backward,
+  #skillsSection > .forward,
+  #skillsSection > .backward {
     position: absolute;
     top: 50%;
     width: 6em;
@@ -2203,7 +2205,9 @@ body.parallax-off #header #parallax_background {
     margin-top: -6em;
     cursor: pointer; }
     .carousel .forward:before,
-    .carousel .backward:before {
+    .carousel .backward:before,
+    #skillsSection > .forward:before,
+    #skillsSection > .backward:before {
       content: '';
       display: block;
       width: 6em;
@@ -2220,7 +2224,9 @@ body.parallax-off #header #parallax_background {
       transition: background-color 0.35s ease-in-out;
       -webkit-backface-visibility: hidden; }
     .carousel .forward:after,
-    .carousel .backward:after {
+    .carousel .backward:after,
+    #skillsSection > .forward:after,
+    #skillsSection > .backward:after {
       content: '';
       width: 3em;
       height: 3em;
@@ -2229,19 +2235,27 @@ body.parallax-off #header #parallax_background {
       margin: -1.5em 0 0 0;
       background: url("images/arrow.svg") no-repeat center center; }
     .carousel .forward:hover:before,
-    .carousel .backward:hover:before {
+    .carousel .backward:hover:before,
+    #skillsSection > .forward:hover:before,
+    #skillsSection > .backward:hover:before {
       background-color: rgba(239, 131, 118, 0.75); }
-  .carousel .forward {
+  .carousel .forward,
+  #skillsSection > .forward {
     right: 0; }
-    .carousel .forward:before {
+    .carousel .forward:before,
+    #skillsSection > .forward:before {
       right: 0; }
-    .carousel .forward:after {
+    .carousel .forward:after,
+    #skillsSection > .forward:after {
       right: calc(1.5em + 10px); }
-  .carousel .backward {
+  .carousel .backward,
+  #skillsSection > .backward {
     left: 0; }
-    .carousel .backward:before {
+    .carousel .backward:before,
+    #skillsSection > .backward:before {
       left: 0; }
-    .carousel .backward:after {
+    .carousel .backward:after,
+    #skillsSection > .backward:after {
       left: calc(1.5em + 10px);
       -moz-transform: scaleX(-1);
       -webkit-transform: scaleX(-1);
@@ -2890,6 +2904,37 @@ body.parallax-off #header #parallax_background {
 #skillsHeader button {
   margin-top: 1em; }
 
+#skillsSection {
+  background: #fff;
+  margin-bottom: 0; }
+
+#skillsSection .skills-reveal .banner {
+  background: transparent;
+  padding-top: 2.5em; }
+
+#lifeSection + #skillsSection .skills-reveal .banner {
+  padding-top: 2.5em; }
+
+#skillsSection .skills-reveal:not(.fade-in) ~ .forward,
+#skillsSection .skills-reveal:not(.fade-in) ~ .backward {
+  opacity: 0 !important;
+  pointer-events: none; }
+
+#skillsSection.is-carousel-inview > .forward,
+#skillsSection.is-carousel-inview > .backward {
+  position: fixed;
+  z-index: 9999; }
+
+#skillsSection.is-carousel-inview > .forward {
+  right: -3em; }
+
+#skillsSection.is-carousel-inview > .backward {
+  left: -3em; }
+
+@media screen and (max-width: 736px) {
+  #lifeSection + #skillsSection .skills-reveal .banner {
+    padding-top: 1.75em; } }
+
 .fadeTarget {
   opacity: 0;
   transform: translateY(50px);
@@ -2898,6 +2943,12 @@ body.parallax-off #header #parallax_background {
 .fadeTarget.fade-in {
   opacity: 1;
   transform: translateY(0); }
+
+@media (prefers-reduced-motion: reduce) {
+  .fadeTarget {
+    opacity: 1;
+    transform: none;
+    transition: none; } }
 
 .fadeTargetTwo {
   opacity: 0;

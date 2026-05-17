@@ -78,12 +78,12 @@
         <!-- Bio -->
         <div class="wrapper style1" id="bioWrapper">
             <section id="bioFeatures" class="container special" aria-labelledby="bioHeading">
-                <header>
+                <header class="fadeTarget">
                     <h2 id="bioHeading">BIO</h2>
                     <p>From belonging to building software that connects people.</p>
                 </header>
                 <div class="row gtr-0">
-                    <article id="main" class="col-12 col-12-mobile special">
+                    <article id="main" class="col-12 col-12-mobile special fadeTarget">
                         <p>During my adolescence, moving to the UK made me feel somewhat out of place, and I often wondered how I could better integrate into society. This curiosity sparked my interest in human interactions and the challenges people face in connecting with one another.</p>
                         <p>After graduating from university, these reflections evolved into ideas that, combined with my software skills, transformed into potential applications. This vision became the driving force behind developing my technical expertise and exploring the vast possibilities of software development. Now, with AI accelerating the realization of this vision, I am actively exploring the frontiers of AI, knowing that the applications I develop could have a transformative impact on humanity.</p>
                         <p>This journey continues to inspire me to leverage technology to bridge gaps in human interaction and create meaningful, real-world impact.</p>
@@ -95,11 +95,11 @@
         <!-- Beyond the desk -->
         <div class="wrapper style1" id="lifeSection">
             <section id="lifeFeatures" class="container special" aria-labelledby="lifeHeading">
-                <header>
+                <header class="fadeTarget">
                     <h2 id="lifeHeading">BEYOND THE DESK</h2>
                     <p>Structure, balance and things that keep me grounded.</p>
                 </header>
-                <div class="life-content">
+                <div class="life-content fadeTarget">
                 <section class="routine-strip" id="routineStrip" aria-label="Daily routine timeline">
                         <div class="container">
                             <div class="routine-strip__card">
@@ -164,18 +164,20 @@
         </div>
 
         <!-- skills -->
-        <section class="banner">
-            <header id="skillsHeader">
-                <h2>Skills & Expertise</h2>
-                <button id="webSkillsBtn">Web Skills</button>
-                <button id="iSkillsBtn">Interpersonal Skills</button>
-                <button id="3dSkillsBtn">3D Skills</button>
-            </header>
-        </section>
+        <div id="skillsSection">
+            <div class="skills-reveal fadeTarget">
+                <section class="banner">
+                    <header id="skillsHeader">
+                        <h2>Skills & Expertise</h2>
+                        <button id="webSkillsBtn">Web Skills</button>
+                        <button id="iSkillsBtn">Interpersonal Skills</button>
+                        <button id="3dSkillsBtn">3D Skills</button>
+                    </header>
+                </section>
 
-        <!-- Skills carousel -->
-        <section class="carousel">
-            <div class="reel">
+                <!-- Skills carousel -->
+                <section class="carousel">
+                    <div class="reel">
 
                 <article class="webskills">
                     <a class="image featured"><img src="images/icons/pic01.jpg" alt="an image of the HTML5 icon" /></a>
@@ -297,8 +299,10 @@
                     <p>1 YEARS EXPERIENCE</p>
                 </article>
 
+                    </div>
+                </section>
             </div>
-        </section>
+        </div>
 
         <!-- Projects -->
         <div class="wrapper style1">

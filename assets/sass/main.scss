@@ -2302,6 +2302,110 @@ body.homepage {
     margin-top: 1em;
 }
 
+#skillsSection {
+    background: #fff;
+    margin-bottom: 0;
+}
+
+#skillsSection .skills-reveal .banner {
+    background: transparent;
+    padding-top: 2.5em;
+}
+
+#lifeSection + #skillsSection .skills-reveal .banner {
+    padding-top: 2.5em;
+}
+
+#skillsSection .skills-reveal:not(.fade-in) ~ .forward,
+#skillsSection .skills-reveal:not(.fade-in) ~ .backward {
+    opacity: 0 !important;
+    pointer-events: none;
+}
+
+#skillsSection.is-carousel-inview > .forward,
+#skillsSection.is-carousel-inview > .backward {
+    position: fixed;
+    z-index: 9999;
+}
+
+#skillsSection.is-carousel-inview > .forward {
+    right: -3em;
+}
+
+#skillsSection.is-carousel-inview > .backward {
+    left: -3em;
+}
+
+#skillsSection > .forward,
+#skillsSection > .backward {
+    position: absolute;
+    top: 50%;
+    width: 6em;
+    height: 12em;
+    margin-top: -6em;
+    cursor: pointer;
+
+    &:before {
+        content: '';
+        display: block;
+        width: 6em;
+        height: 6em;
+        border-radius: 100%;
+        background-color: rgba(72, 57, 73, 0.5);
+        position: absolute;
+        top: 50%;
+        margin-top: -3em;
+        @include vendor('transition', 'background-color 0.35s ease-in-out');
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+    }
+
+    &:after {
+        content: '';
+        width: 3em;
+        height: 3em;
+        position: absolute;
+        top: 50%;
+        margin: -1.5em 0 0 0;
+        background: url('images/arrow.svg') no-repeat center center;
+    }
+
+    &:hover:before {
+        background-color: rgba(239, 131, 118, 0.75);
+    }
+}
+
+#skillsSection > .forward {
+    right: 0;
+
+    &:before {
+        right: 0;
+    }
+
+    &:after {
+        right: calc(1.5em + 10px);
+    }
+}
+
+#skillsSection > .backward {
+    left: 0;
+
+    &:before {
+        left: 0;
+    }
+
+    &:after {
+        left: calc(1.5em + 10px);
+        @include vendor('transform', 'scaleX(-1)');
+    }
+}
+
+@media screen and (max-width: 736px) {
+    #lifeSection + #skillsSection .skills-reveal .banner {
+        padding-top: 1.75em;
+    }
+}
+
 .fadeTarget {
     opacity: 0;
     transform: translateY(50px);
@@ -2311,6 +2415,14 @@ body.homepage {
 .fadeTarget.fade-in {
     opacity: 1;
     transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .fadeTarget {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
 }
 
 //---------------//

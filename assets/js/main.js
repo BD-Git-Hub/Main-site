@@ -50,6 +50,8 @@
     $('.carousel').each(function () {
 
         var $t = $(this),
+            $skillsSection = $t.closest('#skillsSection'),
+            $arrowHost = $skillsSection.length ? $skillsSection : $t,
             $forward = $('<span class="forward"></span>'),
             $backward = $('<span class="backward"></span>'),
             $reel = $t.children('.reel'),
@@ -74,6 +76,9 @@
         // This prevents arrows "scrolling away" if the page can be scrolled horizontally.
         $t._setArrowsInView = function (inView) {
             $t.toggleClass('is-inview', !!inView);
+            if ($skillsSection.length) {
+                $skillsSection.toggleClass('is-carousel-inview', !!inView);
+            }
             $t._updateArrowPos();
         };
 
@@ -141,7 +146,7 @@
 
         // Forward.
         $forward
-            .appendTo($t)
+            .appendTo($arrowHost)
             .hide()
             .mouseenter(function (e) {
                 timerId = window.setInterval(function () {
@@ -161,7 +166,7 @@
 
         // Backward.
         $backward
-            .appendTo($t)
+            .appendTo($arrowHost)
             .hide()
             .mouseenter(function (e) {
                 timerId = window.setInterval(function () {
@@ -237,8 +242,11 @@
     });
 
     $("#lifeBtn").click(function () {
-        if (window.__cancelRoutineIntroSchedule) {
-            window.__cancelRoutineIntroSchedule();
+        if (window.__cancelLifeRevealWait) {
+            window.__cancelLifeRevealWait();
+        }
+        if (window.__lifeNavScrollComplete) {
+            window.__lifeNavScrollComplete(false);
         }
         window.__lifeNavScrollPending = true;
         $('html,body').animate({
@@ -247,8 +255,14 @@
             2800,
             function () {
                 window.__lifeNavScrollPending = false;
-                if (window.__scheduleRoutineIntro) {
-                    window.__scheduleRoutineIntro(window.__routineIntroDelayAfterNav || 400);
+                if (window.__setLifeSectionVisible) {
+                    window.__setLifeSectionVisible(true);
+                }
+                if (window.__lifeNavScrollComplete) {
+                    window.__lifeNavScrollComplete(true);
+                }
+                if (window.__beginLifeIntroWhenReady) {
+                    window.__beginLifeIntroWhenReady();
                 }
             });
     });
@@ -324,35 +338,45 @@
         state2 = !state2;
     });
 
-    //scroll magic 
-
-    //init Scrollmagic 
+    // ScrollMagic — section fade-up (same as portfolio)
     $(document).ready(function () {
         var controller = new ScrollMagic.Controller();
 
-        //build a scene
-        var ourScene = new ScrollMagic.Scene({
-                triggerElement: '.fadeTarget'
-
-            })
-            .setClassToggle('.fadeTarget', 'fade-in') //adds class fade-in to fadeTarget
-            //.addIndicators() - requires plugin
+        new ScrollMagic.Scene({
+            triggerElement: '#bioWrapper'
+        })
+            .setClassToggle('#bioWrapper .fadeTarget', 'fade-in')
             .addTo(controller);
 
-        var ourScene = new ScrollMagic.Scene({
-            triggerElement: '.fadeTargetTwo'
+        new ScrollMagic.Scene({
+            triggerElement: '#lifeSection',
+            triggerHook: 0.75
         })
+            .setClassToggle('#lifeSection .fadeTarget', 'fade-in')
+            .on('enter', function (e) {
+                if (e.scrollDirection === 'REVERSE') return;
+                if (window.__setLifeSectionVisible) {
+                    window.__setLifeSectionVisible(true);
+                }
+                if (window.__lifeNavScrollPending) return;
+                if (window.__beginLifeIntroWhenReady) {
+                    window.__beginLifeIntroWhenReady();
+                }
+            })
+            .addTo(controller);
 
-        var ourScene = new ScrollMagic.Scene({
-            triggerElement: '.fadeTargetThree'
+        new ScrollMagic.Scene({
+            triggerElement: '#skillsSection',
+            triggerHook: 0.75
         })
+            .setClassToggle('#skillsSection .fadeTarget', 'fade-in')
+            .addTo(controller);
 
-        var ourScene = new ScrollMagic.Scene({
-            triggerElement: '.fadeTargetFour'
+        new ScrollMagic.Scene({
+            triggerElement: '#features'
         })
-        var ourScene = new ScrollMagic.Scene({
-            triggerElement: '.fadeTargetFive'
-        })
+            .setClassToggle('#features .fadeTarget', 'fade-in')
+            .addTo(controller);
     });
 
 
@@ -588,34 +612,94 @@
         var introHasPlayed = false;
         var lastProgressT = null;
         var introDurationMs = 2800;
-        var introDelayOnScrollMs = 500;
-        var introDelayAfterNavMs = 400;
-        var introDelayTimer = null;
+        var sectionFadeMs = 1000;
+        var lifeRevealWaitTimer = null;
         var lifeWasVisible = false;
+        var lifeNavScrollComplete = true;
 
         window.__lifeNavScrollPending = false;
-        window.__routineIntroDelayAfterNav = introDelayAfterNavMs;
 
-        function cancelScheduledIntro() {
-            if (introDelayTimer) {
-                window.clearTimeout(introDelayTimer);
-                introDelayTimer = null;
+        function cancelLifeRevealWait() {
+            if (lifeRevealWaitTimer) {
+                window.clearTimeout(lifeRevealWaitTimer);
+                lifeRevealWaitTimer = null;
             }
         }
 
-        function scheduleIntro(delayMs) {
+        function beginLifeIntroWhenReady() {
             if (introHasPlayed || animating) return;
-            cancelScheduledIntro();
-            introDelayTimer = window.setTimeout(function () {
-                introDelayTimer = null;
+            if (!lifeNavScrollComplete || window.__lifeNavScrollPending) return;
+
+            var lifeContent = document.querySelector('#lifeSection .life-content');
+
+            function startIntro() {
+                cancelLifeRevealWait();
                 if (!introHasPlayed && lifeWasVisible) {
                     playIntroAnimation();
                 }
-            }, delayMs);
+            }
+
+            if (!lifeContent || reduceMotion) {
+                startIntro();
+                return;
+            }
+
+            function waitForFadeComplete() {
+                var finished = false;
+
+                function done() {
+                    if (finished) return;
+                    finished = true;
+                    startIntro();
+                }
+
+                lifeContent.addEventListener('transitionend', function (e) {
+                    if (e.target !== lifeContent) return;
+                    if (e.propertyName === 'opacity' || e.propertyName === 'transform') {
+                        done();
+                    }
+                });
+
+                cancelLifeRevealWait();
+                lifeRevealWaitTimer = window.setTimeout(done, sectionFadeMs + 80);
+            }
+
+            if (lifeContent.classList.contains('fade-in')) {
+                if (parseFloat(window.getComputedStyle(lifeContent).opacity) >= 0.99) {
+                    startIntro();
+                } else {
+                    waitForFadeComplete();
+                }
+                return;
+            }
+
+            var fadeObserver = new MutationObserver(function () {
+                if (lifeContent.classList.contains('fade-in')) {
+                    fadeObserver.disconnect();
+                    waitForFadeComplete();
+                }
+            });
+            fadeObserver.observe(lifeContent, { attributes: true, attributeFilter: ['class'] });
+
+            cancelLifeRevealWait();
+            lifeRevealWaitTimer = window.setTimeout(function () {
+                fadeObserver.disconnect();
+                if (lifeContent.classList.contains('fade-in')) {
+                    waitForFadeComplete();
+                } else {
+                    startIntro();
+                }
+            }, sectionFadeMs + 200);
         }
 
-        window.__scheduleRoutineIntro = scheduleIntro;
-        window.__cancelRoutineIntroSchedule = cancelScheduledIntro;
+        window.__beginLifeIntroWhenReady = beginLifeIntroWhenReady;
+        window.__cancelLifeRevealWait = cancelLifeRevealWait;
+        window.__lifeNavScrollComplete = function (complete) {
+            lifeNavScrollComplete = !!complete;
+        };
+        window.__setLifeSectionVisible = function (visible) {
+            lifeWasVisible = !!visible;
+        };
         var startMinsBar = 4 * 60;
         var endMinsBar = 22 * 60;
         var totalBarSpan = (endMinsBar - startMinsBar) || 1;
@@ -872,11 +956,20 @@
         };
 
         window.__playRoutineIntro = function (force) {
-            playIntroAnimation({ force: !!force });
+            if (force) {
+                introHasPlayed = false;
+                cancelLifeRevealWait();
+            }
+            if (force && lifeWasVisible) {
+                lifeNavScrollComplete = true;
+                beginLifeIntroWhenReady();
+            } else {
+                playIntroAnimation({ force: !!force });
+            }
         };
 
         window.__activateRoutineMarker = function () {
-            playIntroAnimation({ force: true });
+            window.__playRoutineIntro(true);
         };
 
         window.__parkRoutineMarkerAtStart = function () {
@@ -894,18 +987,13 @@
 
                     if (visible && !lifeWasVisible) {
                         lifeWasVisible = true;
-                        if (!introHasPlayed) {
-                            if (window.__lifeNavScrollPending) {
-                                return;
-                            }
-                            scheduleIntro(introDelayOnScrollMs);
-                        } else {
+                        if (introHasPlayed) {
                             routineActive = true;
                             updateMarkerPosition({ scrollIntoView: false });
                         }
                     } else if (!visible && lifeWasVisible) {
                         lifeWasVisible = false;
-                        cancelScheduledIntro();
+                        cancelLifeRevealWait();
                         if (!introHasPlayed) {
                             animating = false;
                             routineActive = false;
