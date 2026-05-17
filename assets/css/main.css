@@ -2905,12 +2905,14 @@ body.parallax-off #header #parallax_background {
   margin-top: 1em; }
 
 #skillsSection {
-  background: #fff;
   margin-bottom: 0; }
 
 #skillsSection .skills-reveal .banner {
-  background: transparent;
+  background: #fff;
   padding-top: 2.5em; }
+
+#skillsSection .skills-reveal .carousel {
+  background: #e2e5e8; }
 
 #lifeSection + #skillsSection .skills-reveal .banner {
   padding-top: 2.5em; }
